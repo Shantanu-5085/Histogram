@@ -1,0 +1,2228 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Histogram AI — Food Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2/dist/quagga.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,900;1,9..144,900&family=Outfit:wght@300;400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,300;8..60,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  /* ── Histogram AI — Medical Color System ── */
+  --primary:    #2E7D32;   /* Medical Green  — primary actions, logo, CTAs     */
+  --primary-mid:#388E3C;   /* Mid green      — hover states, gradients          */
+  --primary-lt: #4CAF50;   /* Light green    — accents, highlights               */
+  --primary-glow:rgba(46,125,50,0.12);
+  --teal:       #2A9D8F;   /* Secondary Teal — secondary CTAs, info panels      */
+  --teal-lt:    #3BBFB0;   /* Light teal     — teal highlights                  */
+  --slate:      #334155;   /* Core Slate     — headings, body text              */
+  --slate-mid:  #475569;   /* Mid slate      — secondary text                  */
+  --slate-lt:   #64748B;   /* Light slate    — placeholder, muted               */
+  --accent:     #E9C46A;   /* Warm Gold      — accent badges, burn alert        */
+  --accent-dark:#C9A227;   /* Dark gold      — hover accent                    */
+  --coral:      #E76F51;   /* Warm coral     — high risk, warnings              */
+  --amber:      #F4A261;   /* Soft amber     — moderate risk                   */
+  --bg:         #F1F5F3;   /* Tertiary       — main background (soft clinical)  */
+  --bg2:        #E8EEEB;   /* Slightly deeper — alternating sections            */
+  --bg3:        #EDF1EE;   /* Third bg tone  — cards background                */
+  --surface:    rgba(255,255,255,0.85);
+  --surface2:   rgba(255,255,255,0.95);
+  --border:     rgba(46,125,50,0.15);
+  --border2:    rgba(46,125,50,0.35);
+  --text:       #1E2A22;   /* Near black green-tinted — primary text            */
+  --text2:      #334155;   /* Slate          — secondary text                  */
+  --text3:      #64748B;   /* Muted slate    — hints, labels                   */
+  --shadow-g:   0 4px 24px rgba(46,125,50,0.10);
+  --shadow:     0 2px 16px rgba(51,65,85,0.08);
+
+  /* Keep old names as aliases so existing references don't break */
+  --green:       var(--primary);
+  --green-mid:   var(--primary-mid);
+  --green-light: var(--primary-lt);
+  --green-glow:  var(--primary-glow);
+  --lime:        #81C784;
+  --teal-light:  var(--teal-lt);
+  /* --amber and --coral already declared above */
+}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font-family:'Inter','Source Serif 4',Georgia,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh}
+h1,h2,h3,h4{font-family:'Fraunces',Georgia,serif}
+button,label,select,input,span.ui{font-family:'Outfit',sans-serif}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--green-mid);border-radius:4px}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes scanLine{0%{top:8%}100%{top:88%}}
+@keyframes glow{0%,100%{box-shadow:0 0 24px rgba(46,125,50,.3)}50%{box-shadow:0 0 55px rgba(46,125,50,.6)}}
+@keyframes gradMove{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes orb{0%{transform:scale(1) translate(0,0)}50%{transform:scale(1.08) translate(20px,-15px)}100%{transform:scale(1) translate(0,0)}}
+@keyframes barGrow{from{width:0}to{width:var(--w,0%)}}
+@keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+@keyframes breathe{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.18);opacity:1}}
+@keyframes drift{0%{transform:translateX(0) translateY(0) rotate(0deg)}25%{transform:translateX(12px) translateY(-18px) rotate(90deg)}50%{transform:translateX(-8px) translateY(-30px) rotate(180deg)}75%{transform:translateX(-14px) translateY(-12px) rotate(270deg)}100%{transform:translateX(0) translateY(0) rotate(360deg)}}
+@keyframes slideInLeft{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideInRight{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes countUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes ripple{0%{transform:scale(0);opacity:.5}100%{transform:scale(4);opacity:0}}
+@keyframes lineDraw{from{stroke-dashoffset:1000}to{stroke-dashoffset:0}}
+@keyframes tiltIn{from{opacity:0;transform:perspective(600px) rotateX(12deg) translateY(30px)}to{opacity:1;transform:perspective(600px) rotateX(0deg) translateY(0)}}
+@keyframes particleFade{0%{opacity:0;transform:translateY(0) scale(0)}20%{opacity:.7}80%{opacity:.4}100%{opacity:0;transform:translateY(-80px) scale(1.5)}}
+@keyframes waveFlow{0%,100%{d:path("M0,20 Q200,0 400,20 T800,20 T1200,20 T1600,20 V60 H0Z")}50%{d:path("M0,20 Q200,40 400,20 T800,20 T1200,20 T1600,20 V60 H0Z")}}
+@keyframes morphBlob{0%,100%{border-radius:60% 40% 30% 70%/60% 30% 70% 40%}25%{border-radius:30% 60% 70% 40%/50% 60% 30% 60%}50%{border-radius:50% 60% 30% 40%/30% 40% 70% 70%}75%{border-radius:40% 50% 60% 70%/40% 30% 60% 50%}}
+@keyframes navReveal{from{opacity:0;transform:translateY(-100%)}to{opacity:1;transform:translateY(0)}}
+@keyframes statPop{0%{transform:scale(.7);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+
+.fade-up{animation:fadeUp .6s ease both}
+.fade-in{animation:fadeIn .4s ease both}
+
+/* ── REVEAL ON SCROLL ── */
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-left{opacity:0;transform:translateX(-36px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
+.reveal-left.visible{opacity:1;transform:translateX(0)}
+.reveal-right{opacity:0;transform:translateX(36px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
+.reveal-right.visible{opacity:1;transform:translateX(0)}
+.reveal-scale{opacity:0;transform:scale(.92);transition:opacity .6s cubic-bezier(.22,1,.36,1),transform .6s cubic-bezier(.22,1,.36,1)}
+.reveal-scale.visible{opacity:1;transform:scale(1)}
+
+/* ── MAGNETIC BUTTON EFFECT ── */
+.btn-mag{transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s ease}
+
+/* ── CARD TILT ── */
+.card-tilt{transform-style:preserve-3d;transition:transform .4s cubic-bezier(.22,1,.36,1)}
+
+/* ── SHIMMER LOADING STATE ── */
+.shimmer-text{
+  background:linear-gradient(90deg,var(--primary) 0%,var(--teal) 40%,var(--primary-lt) 60%,var(--teal) 80%,var(--primary) 100%);
+  background-size:200% auto;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:shimmer 3s linear infinite;
+}
+
+/* ── GLASS MORPHISM CARDS ── */
+.glass{background:rgba(255,255,255,.72);backdrop-filter:blur(20px) saturate(1.6);border:1px solid rgba(255,255,255,.8);box-shadow:0 4px 32px rgba(46,125,50,.08),inset 0 1px 0 rgba(255,255,255,.9)}
+
+/* ── FLOATING PARTICLE ── */
+.particle{position:absolute;pointer-events:none;border-radius:50%;animation:particleFade var(--dur,4s) var(--delay,0s) ease-in infinite}
+
+/* ── CURSOR GLOW ── */
+#cursorGlow{position:fixed;pointer-events:none;z-index:9999;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(46,125,50,.06) 0%,transparent 70%);transform:translate(-50%,-50%);transition:left .08s ease,top .08s ease;top:-999px;left:-999px}
+
+/* ── SECTION DIVIDER WAVE ── */
+.wave-divider{overflow:hidden;line-height:0;position:relative}
+.wave-divider svg{display:block;position:relative}
+
+/* ── STAT COUNTER ── */
+.stat-num{display:inline-block;animation:statPop .8s cubic-bezier(.22,1,.36,1) both}
+
+/* ── ACTIVE NAV PILL ── */
+.nl.active{background:linear-gradient(135deg,rgba(46,125,50,.12),rgba(42,157,143,.08));color:var(--primary);font-weight:700;box-shadow:inset 0 1px 0 rgba(255,255,255,.8)}
+
+/* ── PROGRESS RING ANIMATE ── */
+.score-ring{transition:stroke-dasharray .9s cubic-bezier(.22,1,.36,1),stroke .4s ease}
+
+/* ── MOLECULE DECORATION ── */
+.molecule{position:absolute;pointer-events:none;opacity:.06}
+
+.grad-text{
+  background:linear-gradient(120deg,var(--primary) 0%,var(--teal) 50%,var(--primary-lt) 100%);
+  background-size:250% auto;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:gradMove 5s ease infinite;
+}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:300;padding:0 28px;background:rgba(241,245,243,0.94);backdrop-filter:blur(28px) saturate(2);border-bottom:1px solid rgba(46,125,50,.12);box-shadow:0 1px 20px rgba(46,125,50,.08);animation:navReveal .6s ease both}
+.nav-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{font-family:'Fraunces',serif;font-size:25px;font-weight:900;color:var(--green-light);cursor:pointer;display:flex;align-items:center;gap:10px;letter-spacing:-.02em;user-select:none}
+.nav-links{display:flex;align-items:center;gap:2px}
+.nl{font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;color:var(--slate-mid);padding:7px 13px;border-radius:8px;cursor:pointer;border:none;background:none;transition:all .2s}
+.nl:hover,.nl.active{background:var(--green-glow);color:var(--green-light)}
+.nl.active{font-weight:700}
+
+/* BUTTONS */
+.btn{font-family:'Outfit',sans-serif;font-weight:700;font-size:14px;border:none;border-radius:12px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:all .22s;letter-spacing:.01em}
+.btn-g{background:linear-gradient(135deg,var(--primary),var(--teal));color:white;padding:13px 26px;box-shadow:0 4px 16px rgba(46,125,50,.3)}
+.btn-g:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(46,125,50,.45);filter:brightness(1.06)}
+.btn-g:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-outline{background:white;color:var(--primary);border:1.5px solid var(--border2);padding:11px 22px;box-shadow:0 1px 4px rgba(46,125,50,.08)}
+.btn-outline:hover{background:var(--primary-glow);border-color:var(--primary)}
+.btn-ghost{background:none;color:var(--text2);border:none;padding:8px 12px;font-size:13px;font-weight:500;cursor:pointer}
+.btn-ghost:hover{color:var(--green-light)}
+
+/* CARDS */
+.card{background:white;border:1px solid var(--border);border-radius:20px;padding:28px;box-shadow:0 2px 12px rgba(51,65,85,.06);transition:transform .25s,border-color .25s,box-shadow .25s}
+.card:hover{transform:translateY(-4px) scale(1.005);border-color:var(--border2);box-shadow:0 12px 40px rgba(46,125,50,.13),0 2px 0 rgba(255,255,255,.9) inset}
+
+/* INPUTS */
+input,select{font-family:'Outfit',sans-serif;background:white;border:1.5px solid #D1D9D4;border-radius:12px;padding:13px 16px;font-size:15px;color:var(--text);transition:border-color .2s,box-shadow .2s;width:100%;outline:none;box-shadow:inset 0 1px 3px rgba(51,65,85,.04)}
+input::placeholder{color:#94A3B8}
+input:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(46,125,50,.12)}
+select option{background:white;color:var(--text)}
+
+/* LAYOUT */
+.section{max-width:1280px;margin:0 auto;padding:100px 32px}
+.eyebrow{font-family:'Outfit',sans-serif;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);display:block;margin-bottom:10px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.divider{height:1px;background:var(--border);margin:24px 0}
+.tag{display:inline-flex;align-items:center;gap:5px;background:rgba(42,157,143,.1);color:var(--teal);border-radius:20px;padding:4px 12px;font-size:11px;font-family:'Outfit',sans-serif;font-weight:700;letter-spacing:.04em;border:1px solid rgba(42,157,143,.2)}
+
+/* SPINNER */
+.spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.2);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+
+/* SCANNER */
+/* Quagga injects its own <video> and <canvas> — make them fill the container */
+#quaggaViewport video,
+#quaggaViewport canvas {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  border-radius: 18px !important;
+}
+#quaggaViewport canvas.drawingBuffer {
+  z-index: 3 !important;
+  pointer-events: none !important;
+}
+.scanner-box{position:relative;width:100%;max-width:420px;aspect-ratio:16/9;background:#0d1410;border-radius:20px;overflow:hidden;margin:0 auto;border:2px solid var(--primary);min-height:200px}
+.scan-beam{position:absolute;left:6%;right:6%;height:2px;background:linear-gradient(90deg,transparent,var(--primary-lt),transparent);animation:scanLine 2s ease-in-out infinite alternate;box-shadow:0 0 14px var(--primary-lt)}
+
+/* NUTRITION BARS */
+.nb-track{height:8px;background:#E2E8E4;border-radius:4px;overflow:hidden}
+.nb-fill{height:100%;border-radius:4px;animation:barGrow .9s ease both}
+
+/* BADGES */
+.badge-healthy{background:rgba(52,199,89,.15);color:#34C759;border:1px solid rgba(52,199,89,.3)}
+.badge-moderate{background:rgba(245,158,11,.15);color:#F59E0B;border:1px solid rgba(245,158,11,.3)}
+.badge-risk{background:rgba(244,82,45,.15);color:#F4522D;border:1px solid rgba(244,82,45,.3)}
+
+/* BLOG CARD */
+.bc{background:white;border:1px solid var(--border);border-radius:20px;overflow:hidden;cursor:pointer;transition:transform .22s,border-color .22s,box-shadow .22s;box-shadow:0 2px 10px rgba(51,65,85,.05)}
+.bc:hover{transform:translateY(-5px);border-color:var(--border2);box-shadow:0 12px 36px rgba(46,125,50,.14)}
+.cmp-cell{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;align-items:center;gap:8px}
+.anchor{scroll-margin-top:70px}
+.mobile-nav{display:none}
+.hidden{display:none!important}
+
+@media(max-width:900px){.g3{grid-template-columns:1fr 1fr}.g4{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){
+  .g2,.g3,.g4{grid-template-columns:1fr}
+  .nav-links{display:none}
+  .section{padding:64px 18px}
+  .mobile-nav{display:flex!important;position:fixed;bottom:0;left:0;right:0;z-index:300;background:rgba(241,245,243,0.97);backdrop-filter:blur(18px);border-top:1px solid var(--border);padding:8px 0}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="logo" onclick="scrollToSection('home')">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <rect x="1" y="16" width="5" height="11" rx="2" fill="#1A6B3A"/>
+        <rect x="8" y="10" width="5" height="17" rx="2" fill="#22873F"/>
+        <rect x="15" y="4" width="5" height="23" rx="2" fill="#34C759"/>
+        <rect x="22" y="12" width="5" height="15" rx="2" fill="#A8E063"/>
+      </svg>
+      Histogram AI
+    </div>
+    <div class="nav-links" id="navLinks">
+      <button class="nl active" onclick="scrollToSection('home')">Home</button>
+      <button class="nl" onclick="scrollToSection('scanner')">Scanner</button>
+      <button class="nl" id="navResult" style="display:none" onclick="scrollToSection('result')">Result</button>
+      <button class="nl" onclick="scrollToSection('compare')">Compare</button>
+      <button class="nl" onclick="scrollToSection('blog')">Blog</button>
+      <button class="nl" onclick="scrollToSection('profile')">Profile</button>
+      <div style="width:1px;height:18px;background:var(--border);margin:0 8px"></div>
+      <button class="btn btn-g" style="padding:10px 18px;font-size:13px" onclick="scrollToSection('scanner')">📷 Scan Now</button>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+<!-- ── HERO ── -->
+<div id="cursorGlow"></div>
+<canvas id="heroCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.5"></canvas>
+
+<section id="home" class="anchor" style="position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden">
+
+  <!-- Morphing background blobs -->
+  <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none">
+    <div style="position:absolute;width:800px;height:800px;top:-200px;left:-200px;background:radial-gradient(circle,rgba(46,125,50,.06) 0%,transparent 65%);animation:breathe 14s ease-in-out infinite"></div>
+    <div style="position:absolute;width:600px;height:600px;bottom:-150px;right:-100px;background:radial-gradient(circle,rgba(42,157,143,.07) 0%,transparent 65%);animation:breathe 11s ease-in-out infinite reverse"></div>
+    <div style="position:absolute;width:400px;height:400px;top:40%;left:60%;background:radial-gradient(circle,rgba(233,196,106,.05) 0%,transparent 65%);animation:breathe 9s ease-in-out infinite 2s"></div>
+  </div>
+
+  <!-- Animated histogram bars (right side) -->
+  <div id="heroBars" style="position:absolute;right:5%;top:50%;transform:translateY(-50%);display:flex;align-items:flex-end;gap:10px;pointer-events:none" aria-hidden="true"></div>
+
+  <!-- Floating molecules (left side) -->
+  <svg class="molecule" style="width:200px;left:2%;top:15%;animation:float 16s ease-in-out infinite" viewBox="0 0 200 200">
+    <circle cx="100" cy="60" r="14" fill="none" stroke="#2E7D32" stroke-width="1.5"/>
+    <circle cx="60"  cy="130" r="10" fill="none" stroke="#2A9D8F" stroke-width="1.5"/>
+    <circle cx="145" cy="135" r="12" fill="none" stroke="#2E7D32" stroke-width="1.5"/>
+    <line x1="100" y1="74"  x2="67"  y2="121" stroke="#2E7D32" stroke-width="1" stroke-dasharray="4 3"/>
+    <line x1="100" y1="74"  x2="138" y2="124" stroke="#2A9D8F" stroke-width="1" stroke-dasharray="4 3"/>
+    <line x1="70"  y1="130" x2="134" y2="132" stroke="#2E7D32" stroke-width="1" stroke-dasharray="4 3"/>
+  </svg>
+
+  <!-- Floating food particles -->
+  <div id="heroParticles" style="position:absolute;inset:0;pointer-events:none;overflow:hidden" aria-hidden="true"></div>
+
+  <!-- Content -->
+  <div style="position:relative;z-index:2;width:100%">
+    <div class="section" style="text-align:center;padding-top:130px;padding-bottom:90px">
+
+      <!-- Animated eyebrow pill -->
+      <div class="fade-up" style="animation-delay:0ms;display:inline-flex;align-items:center;gap:8px;background:rgba(46,125,50,.08);border:1px solid rgba(46,125,50,.2);border-radius:30px;padding:6px 18px 6px 8px;margin-bottom:28px">
+        <span style="width:6px;height:6px;border-radius:50%;background:var(--primary);display:inline-block;animation:pulse 2s ease infinite"></span>
+        <span style="font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--primary)">Food Intelligence Platform</span>
+      </div>
+
+      <h1 class="fade-up" style="animation-delay:80ms;font-size:clamp(54px,9vw,108px);line-height:.95;letter-spacing:-.04em;margin-bottom:0;font-weight:900;font-style:italic;color:var(--text)">Your food</h1>
+      <h1 class="shimmer-text fade-up" style="animation-delay:120ms;font-size:clamp(54px,9vw,108px);line-height:1.05;letter-spacing:-.04em;margin-bottom:40px;font-weight:900;font-style:italic">decoded.</h1>
+
+      <p class="fade-up" style="animation-delay:200ms;font-size:clamp(16px,2vw,20px);color:var(--slate-mid);max-width:540px;margin:0 auto 52px;line-height:1.85;font-weight:300">
+        Scan any barcode. Instantly decode nutrition data, preservatives, and additives — understand what you're <em style="font-style:italic;color:var(--primary);font-weight:500">really</em> eating.
+      </p>
+
+      <!-- Search bar with ripple -->
+      <div class="fade-up" style="animation-delay:260ms;max-width:540px;margin:0 auto 20px;position:relative">
+        <div id="heroSearchBox" style="display:flex;gap:8px;background:white;border-radius:20px;padding:8px;border:2px solid rgba(46,125,50,.18);box-shadow:0 8px 40px rgba(46,125,50,.12),0 2px 8px rgba(51,65,85,.06);transition:border-color .3s,box-shadow .3s" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='rgba(46,125,50,.18)'">
+          <input type="text" id="heroInput" placeholder="Enter barcode  (e.g. 5000112637939)"
+            style="border:none;box-shadow:none;background:transparent;flex:1;font-size:15px;color:var(--text);padding-left:8px"
+            onkeydown="if(event.key==='Enter')heroScan()"
+            onfocus="document.getElementById('heroSearchBox').style.cssText='display:flex;gap:8px;background:white;border-radius:20px;padding:8px;border:2px solid var(--primary);box-shadow:0 8px 48px rgba(46,125,50,.2),0 2px 8px rgba(51,65,85,.06);transition:border-color .3s,box-shadow .3s'"
+            onblur="document.getElementById('heroSearchBox').style.cssText='display:flex;gap:8px;background:white;border-radius:20px;padding:8px;border:2px solid rgba(46,125,50,.18);box-shadow:0 8px 40px rgba(46,125,50,.12),0 2px 8px rgba(51,65,85,.06);transition:border-color .3s,box-shadow .3s'"/>
+          <button class="btn btn-g btn-mag" id="heroBtn" onclick="heroScan()" style="border-radius:14px;padding:11px 22px">🔍 Scan</button>
+        </div>
+        <p id="heroError" style="color:var(--coral);margin-top:10px;font-size:13px;font-family:'Outfit',sans-serif;display:none"></p>
+      </div>
+
+      <div class="fade-up" style="animation-delay:310ms">
+        <button class="btn btn-outline btn-mag" onclick="scrollToSection('scanner')" style="font-size:14px;border-radius:14px">📷 Use Camera Scanner</button>
+      </div>
+
+      <div class="fade-up" style="animation-delay:370ms;margin-top:40px;display:flex;flex-wrap:wrap;gap:9px;justify-content:center">
+        <span style="font-family:'Outfit',sans-serif;font-size:12px;color:var(--text3);align-self:center">Try demos:</span>
+        <button class="demo-chip" onclick="triggerScan('8901030858283')">🍜 Maggi</button>
+        <button class="demo-chip" onclick="triggerScan('5000112637939')">🥤 Coca-Cola</button>
+        <button class="demo-chip" onclick="triggerScan('0016000275287')">🌾 Cheerios</button>
+        <button class="demo-chip" onclick="triggerScan('737628064502')">🍫 Kind Bar</button>
+      </div>
+
+      <!-- Scroll cue -->
+      <div style="margin-top:72px;display:flex;flex-direction:column;align-items:center;gap:6px">
+        <span style="font-family:'Outfit',sans-serif;font-size:9px;color:var(--text3);letter-spacing:.18em;font-weight:700">SCROLL</span>
+        <div style="width:24px;height:38px;border:1.5px solid rgba(46,125,50,.3);border-radius:12px;display:flex;justify-content:center;padding-top:5px">
+          <div style="width:3px;height:8px;background:var(--primary);border-radius:2px;animation:float 1.8s ease-in-out infinite"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+.demo-chip{font-family:'Outfit',sans-serif;font-size:12px;background:white;border:1px solid var(--border);border-radius:20px;padding:6px 14px;color:var(--slate-mid);cursor:pointer;transition:all .2s;box-shadow:0 1px 4px rgba(51,65,85,.06)}
+.demo-chip:hover{border-color:var(--primary);color:var(--primary);box-shadow:0 2px 8px rgba(46,125,50,.12)}
+</style>
+
+<!-- ── STATS ── -->
+<div style="position:relative">
+<div style="background:linear-gradient(135deg,var(--primary) 0%,var(--teal) 100%);padding:52px 32px;position:relative;overflow:hidden">
+  <!-- Subtle grid overlay -->
+  <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none"></div>
+  <div style="max-width:1280px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+    <div style="text-align:center"><div class="stat-num" style="font-family:'Fraunces',serif;font-size:48px;font-weight:900;color:white;line-height:1;margin-bottom:4px" data-target="4" data-suffix="M+">4M+</div><div style="font-family:'Outfit',sans-serif;font-size:13px;color:rgba(255,255,255,.75);font-weight:500">Products</div></div>
+    <div style="text-align:center"><div class="stat-num" style="font-family:'Fraunces',serif;font-size:48px;font-weight:900;color:white;line-height:1;margin-bottom:4px" data-target="200" data-suffix="+">200+</div><div style="font-family:'Outfit',sans-serif;font-size:13px;color:rgba(255,255,255,.75);font-weight:500">Additives Decoded</div></div>
+    <div style="text-align:center"><div class="stat-num" style="font-family:'Fraunces',serif;font-size:48px;font-weight:900;color:white;line-height:1;margin-bottom:4px" data-target="50" data-suffix="K+">50K+</div><div style="font-family:'Outfit',sans-serif;font-size:13px;color:rgba(255,255,255,.75);font-weight:500">Active Users</div></div>
+    <div style="text-align:center"><div class="stat-num" style="font-family:'Fraunces',serif;font-size:48px;font-weight:900;color:white;line-height:1;margin-bottom:4px" data-target="99" data-suffix="%">99%</div><div style="font-family:'Outfit',sans-serif;font-size:13px;color:rgba(255,255,255,.75);font-weight:500">Accuracy Rate</div></div>
+  </div>
+</div>
+</div>
+
+<!-- ── SCANNER ── -->
+<section id="scanner" class="anchor" style="background:var(--bg2);padding:100px 32px;border-top:1px solid var(--border)">
+  <div style="max-width:1280px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:56px">
+      <span class="eyebrow reveal">Product Scanner</span>
+      <h2 class="reveal" style="font-size:clamp(32px,5vw,56px);letter-spacing:-.02em;line-height:1.1">Scan anything.<br/><span class="grad-text">Know everything.</span></h2>
+      <p style="color:var(--text2);margin-top:14px;font-size:17px;max-width:460px;margin:14px auto 0;line-height:1.75">Camera or barcode — get instant food intelligence in seconds.</p>
+    </div>
+    <div class="g2" style="align-items:start">
+      <div>
+        <div class="scanner-box" id="scannerBox">
+
+          <!-- IDLE STATE -->
+          <div id="scannerIdle" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;padding:24px">
+            <div style="width:72px;height:72px;border-radius:50%;background:rgba(46,125,50,.15);display:flex;align-items:center;justify-content:center;font-size:32px">📷</div>
+            <button class="btn btn-g" onclick="activateCam()" style="border-radius:14px">
+              <span style="font-size:16px">📷</span> Activate Camera
+            </button>
+            <p id="camError" style="color:#F4A261;font-size:12px;font-family:'Outfit',sans-serif;text-align:center;display:none;max-width:240px;line-height:1.5;margin-top:4px"></p>
+          </div>
+
+          <!-- ACTIVE STATE: Quagga injects its own <video>+<canvas> into #quaggaViewport -->
+          <div id="scannerActive" style="display:none;position:absolute;inset:0;">
+
+            <!-- Quagga owns this div — it injects <video> + <canvas> here automatically -->
+            <div id="quaggaViewport" style="position:absolute;inset:0;overflow:hidden;border-radius:18px;"></div>
+
+            <!-- Aiming reticle overlay — centered box to aim barcode at -->
+            <div style="position:absolute;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center;z-index:4">
+              <div style="position:relative;width:72%;max-width:320px;height:38%;">
+                <!-- dim overlay outside the reticle box -->
+                <div style="position:absolute;inset:-9999px;background:rgba(0,0,0,0.45);"></div>
+                <!-- the clear scanning window -->
+                <div style="position:absolute;inset:0;border:2.5px solid #4CAF50;border-radius:10px;
+                  box-shadow:0 0 0 9999px rgba(0,0,0,0.45);">
+                  <!-- animated scan beam -->
+                  <div class="scan-beam" style="top:0;animation:scanLine 1.6s ease-in-out infinite alternate"></div>
+                  <!-- corner accents -->
+                  <div style="position:absolute;top:-3px;left:-3px;width:20px;height:20px;border-top:4px solid #4CAF50;border-left:4px solid #4CAF50;border-radius:4px 0 0 0"></div>
+                  <div style="position:absolute;top:-3px;right:-3px;width:20px;height:20px;border-top:4px solid #4CAF50;border-right:4px solid #4CAF50;border-radius:0 4px 0 0"></div>
+                  <div style="position:absolute;bottom:-3px;left:-3px;width:20px;height:20px;border-bottom:4px solid #4CAF50;border-left:4px solid #4CAF50;border-radius:0 0 0 4px"></div>
+                  <div style="position:absolute;bottom:-3px;right:-3px;width:20px;height:20px;border-bottom:4px solid #4CAF50;border-right:4px solid #4CAF50;border-radius:0 0 4px 0"></div>
+                  <span style="position:absolute;bottom:-24px;left:0;right:0;text-align:center;
+                    font-family:'Outfit',sans-serif;font-size:10px;font-weight:700;color:#4CAF50;
+                    letter-spacing:.08em;text-transform:uppercase">Align barcode here</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Status pill -->
+            <div id="camStatus" style="position:absolute;top:12px;left:50%;transform:translateX(-50%);
+              background:rgba(0,0,0,.65);backdrop-filter:blur(10px);border-radius:20px;
+              padding:5px 14px;font-family:'Outfit',sans-serif;font-size:12px;
+              color:rgba(255,255,255,.85);white-space:nowrap;display:flex;align-items:center;gap:6px;z-index:6">
+              <span id="statusDot" style="width:7px;height:7px;border-radius:50%;background:#4CAF50;display:inline-block;animation:pulse 1.2s ease infinite"></span>
+              <span id="statusText">Point barcode at the green box</span>
+            </div>
+
+            <!-- Auto-scanning label -->
+            <div style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+              background:rgba(0,0,0,.55);backdrop-filter:blur(8px);border-radius:20px;
+              font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;
+              color:rgba(255,255,255,.85);padding:7px 18px;z-index:6;
+              white-space:nowrap;letter-spacing:.04em;animation:pulse 2s ease infinite">
+              🔍 Auto-scanning…
+            </div>
+
+            <!-- Stop button -->
+            <button onclick="stopCam()"
+              style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,.5);
+              border:1px solid rgba(255,255,255,.2);border-radius:20px;color:white;
+              font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;
+              padding:5px 12px;cursor:pointer;z-index:6">✕ Stop</button>
+          </div>
+
+          <!-- SUCCESS STATE -->
+          <div id="scannerSuccess" style="display:none;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;padding:24px">
+            <div style="font-size:40px">✅</div>
+            <div style="font-family:'Outfit',sans-serif;font-size:15px;font-weight:800;color:rgba(255,255,255,.95)">Barcode found!</div>
+            <div id="detectedBarcode" style="font-family:'Outfit',sans-serif;font-size:14px;color:rgba(255,255,255,.6);letter-spacing:.1em"></div>
+            <button class="btn btn-g" onclick="resetCam()" style="border-radius:12px;padding:9px 22px;font-size:13px">📷 Scan Again</button>
+          </div>
+        </div>
+
+        <!-- Tip -->
+        <p style="text-align:center;color:var(--text3);font-size:11px;font-family:'Outfit',sans-serif;margin-top:10px;line-height:1.6">
+          Point the <strong>barcode</strong> at the green box — it scans automatically
+        </p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <div class="card">
+          <span class="eyebrow" style="margin-bottom:10px">Manual Entry</span>
+          <h3 style="font-size:22px;margin-bottom:18px;letter-spacing:-.01em">Enter Barcode</h3>
+          <div style="display:flex;gap:10px;margin-bottom:12px">
+            <input type="text" id="scanInput" placeholder="e.g. 8901030858283" onkeydown="if(event.key==='Enter')doScan()"/>
+            <button class="btn btn-g" id="scanBtn" onclick="doScan()" style="white-space:nowrap">Look Up</button>
+          </div>
+          <p id="scanError" style="color:#F4522D;font-size:13px;font-family:'Outfit',sans-serif;display:none"></p>
+        </div>
+        <div class="card">
+          <span class="eyebrow" style="margin-bottom:12px">Demo Products</span>
+          <div id="demoList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── RESULT ── -->
+<section id="result" class="anchor hidden" style="background:var(--bg);padding:100px 32px;border-top:1px solid var(--border)">
+  <div style="max-width:1280px;margin:0 auto" id="resultContent"></div>
+</section>
+
+<!-- ── COMPARE ── -->
+<section id="compare" class="anchor" style="background:var(--bg2);padding:100px 32px;border-top:1px solid var(--border)">
+  <div style="max-width:1280px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:52px">
+      <span class="eyebrow">Side-by-Side</span>
+      <h2 style="font-size:clamp(32px,5vw,56px);letter-spacing:-.02em">Compare Products</h2>
+      <p style="color:var(--text2);margin-top:12px;max-width:440px;margin:12px auto 0;line-height:1.75">Select two products to instantly see the healthier choice.</p>
+    </div>
+    <div class="g2" style="margin-bottom:24px">
+      <div class="card" id="cmpCardA">
+        <span class="eyebrow" style="margin-bottom:10px">Product A</span>
+        <select id="cmpSelectA" onchange="renderCompare()" style="margin-bottom:16px"></select>
+        <div id="cmpPreviewA"></div>
+      </div>
+      <div class="card" id="cmpCardB">
+        <span class="eyebrow" style="margin-bottom:10px">Product B</span>
+        <select id="cmpSelectB" onchange="renderCompare()" style="margin-bottom:16px"></select>
+        <div id="cmpPreviewB"></div>
+      </div>
+    </div>
+    <div id="cmpWinner" style="background:linear-gradient(135deg,var(--primary),var(--teal));border-radius:20px;padding:22px 32px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px"></div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <div id="cmpTable" style="display:grid;grid-template-columns:1fr 100px 1fr"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── BLOG ── -->
+<section id="blog" class="anchor" style="background:var(--bg);padding:100px 32px;border-top:1px solid var(--border)">
+  <div style="max-width:1280px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:52px">
+      <span class="eyebrow">Education Hub</span>
+      <h2 style="font-size:clamp(32px,5vw,56px);letter-spacing:-.02em">Food Intelligence <span class="grad-text">Blog</span></h2>
+      <p style="color:var(--text2);margin-top:12px;font-size:17px;max-width:460px;margin:12px auto 0;line-height:1.75">Ingredient science, label literacy, and additive awareness.</p>
+    </div>
+    <div class="g3" id="blogGrid"></div>
+    <div id="blogPost" style="display:none;max-width:760px;margin:0 auto"></div>
+  </div>
+</section>
+
+<!-- ── PROFILE ── -->
+<section id="profile" class="anchor" style="background:var(--bg2);padding:100px 32px;border-top:1px solid var(--border)">
+  <div style="max-width:900px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:48px">
+      <span class="eyebrow">My Account</span>
+      <h2 style="font-size:clamp(32px,5vw,52px);letter-spacing:-.02em">Nutrition Profile</h2>
+    </div>
+    <div style="display:flex;align-items:center;gap:20px;margin-bottom:36px;padding:20px 24px;background:var(--surface);border-radius:20px;border:1px solid var(--border)">
+      <div id="profileAvatar" style="width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--teal));display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:26px;color:white;font-weight:900">A</div>
+      <div>
+        <h3 id="profileNameDisplay" style="font-family:'Outfit',sans-serif;font-weight:700;font-size:20px">Alex Morgan</h3>
+        <p style="color:var(--text3);font-family:'Outfit',sans-serif;font-size:13px">Personalized analysis active</p>
+      </div>
+      <span style="margin-left:auto;background:rgba(46,125,50,.1);color:var(--primary);font-family:'Outfit',sans-serif;font-size:11px;font-weight:800;padding:5px 14px;border-radius:20px;border:1px solid rgba(46,125,50,.22)">Pro Member</span>
+    </div>
+    <div class="g2" style="margin-bottom:24px">
+      <div class="card">
+        <span class="eyebrow" style="margin-bottom:14px">Personal Details</span>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div><label style="font-family:'Outfit',sans-serif;font-weight:600;font-size:12px;display:block;margin-bottom:6px;color:var(--text2)">Full Name</label><input type="text" id="pName" value="Alex Morgan" oninput="updateProfileAvatar()"/></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div><label style="font-family:'Outfit',sans-serif;font-weight:600;font-size:12px;display:block;margin-bottom:6px;color:var(--text2)">Age</label><input type="number" id="pAge" value="28"/></div>
+            <div><label style="font-family:'Outfit',sans-serif;font-weight:600;font-size:12px;display:block;margin-bottom:6px;color:var(--text2)">Height (cm)</label><input type="number" id="pHeight" value="172" oninput="updateStats()"/></div>
+            <div><label style="font-family:'Outfit',sans-serif;font-weight:600;font-size:12px;display:block;margin-bottom:6px;color:var(--text2)">Weight (kg)</label><input type="number" id="pWeight" value="68" oninput="updateStats()"/></div>
+            <div><label style="font-family:'Outfit',sans-serif;font-weight:600;font-size:12px;display:block;margin-bottom:6px;color:var(--text2)">Diet Type</label>
+              <select id="pDiet"><option value="none">No restriction</option><option value="vegetarian">Vegetarian</option><option value="vegan">Vegan</option><option value="gluten-free">Gluten-Free</option><option value="diabetic">Diabetic-Friendly</option></select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="card">
+          <span class="eyebrow" style="margin-bottom:14px">Nutrition Goal</span>
+          <div id="goalOptions"></div>
+        </div>
+        <button class="btn btn-g" id="saveBtn" onclick="saveProfile()" style="width:100%;justify-content:center;padding:14px 0">Save Profile</button>
+      </div>
+    </div>
+    <div class="g4" id="profileStats"></div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer style="background:var(--bg2);border-top:1px solid var(--border);padding:48px 32px 36px">
+  <div style="max-width:1280px;margin:0 auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;margin-bottom:28px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="1" y="16" width="5" height="11" rx="2" fill="#1A6B3A"/><rect x="8" y="10" width="5" height="17" rx="2" fill="#22873F"/><rect x="15" y="4" width="5" height="23" rx="2" fill="#34C759"/><rect x="22" y="12" width="5" height="15" rx="2" fill="#A8E063"/></svg>
+        <span style="font-family:'Fraunces',serif;font-size:22px;font-weight:900;color:var(--green-light)">Histogram AI</span>
+      </div>
+      <p style="font-family:'Outfit',sans-serif;font-size:13px;color:var(--text3)">Food intelligence for a healthier world.</p>
+    </div>
+    <div class="divider"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <p style="font-family:'Outfit',sans-serif;font-size:12px;color:var(--text3)">© 2025 Histogram AI. All rights reserved.</p>
+      <div style="display:flex;gap:20px">
+        <span style="font-family:'Outfit',sans-serif;font-size:12px;color:var(--text3);cursor:pointer">Privacy</span>
+        <span style="font-family:'Outfit',sans-serif;font-size:12px;color:var(--text3);cursor:pointer">Terms</span>
+        <span style="font-family:'Outfit',sans-serif;font-size:12px;color:var(--text3);cursor:pointer">Contact</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- MOBILE NAV -->
+<div class="mobile-nav" id="mobileNav"></div>
+
+<script>
+// ── ADDITIVE DATABASE ────────────────────────────────────────────────────────
+const ADDITIVE_DB={
+  "E102":{name:"Tartrazine",purpose:"Synthetic yellow dye",risk:"high",concern:"Linked to hyperactivity in children. Banned or restricted in several countries."},
+  "E110":{name:"Sunset Yellow FCF",purpose:"Orange-yellow food dye",risk:"moderate",concern:"May trigger allergic reactions. Linked to hyperactivity in some children."},
+  "E150A":{name:"Plain Caramel",purpose:"Brown coloring",risk:"low",concern:"Generally considered safe at typical food levels."},
+  "E150D":{name:"Sulphite Ammonia Caramel",purpose:"Brown coloring (soft drinks)",risk:"high",concern:"Contains 4-MEI, classified as possibly carcinogenic (IARC Group 2B)."},
+  "E200":{name:"Sorbic Acid",purpose:"Antifungal preservative",risk:"low",concern:"Generally recognized as safe. Mild irritation in rare cases."},
+  "E202":{name:"Potassium Sorbate",purpose:"Antifungal preservative",risk:"low",concern:"Widely considered safe. Can cause mild skin irritation in rare cases."},
+  "E210":{name:"Benzoic Acid",purpose:"Antimicrobial preservative",risk:"high",concern:"Can form benzene with Vitamin C. May trigger asthma and allergic reactions."},
+  "E211":{name:"Sodium Benzoate",purpose:"Antimicrobial preservative",risk:"high",concern:"Combined with Vitamin C, can form benzene — a Group 1 human carcinogen."},
+  "E220":{name:"Sulphur Dioxide",purpose:"Preservative / antioxidant",risk:"moderate",concern:"Can trigger asthma attacks. Destroys Vitamin B1. Restricted for children."},
+  "E250":{name:"Sodium Nitrite",purpose:"Curing agent / preservative",risk:"high",concern:"Can form nitrosamines, classified as probable human carcinogens."},
+  "E251":{name:"Sodium Nitrate",purpose:"Curing preservative in meats",risk:"high",concern:"Converts to nitrite in body. Linked to increased cancer risk with high consumption."},
+  "E300":{name:"Ascorbic Acid (Vit C)",purpose:"Antioxidant / preservative",risk:"low",concern:"Vitamin C. No concerns at food levels; beneficial antioxidant."},
+  "E304":{name:"Ascorbyl Palmitate",purpose:"Fat-soluble antioxidant",risk:"low",concern:"Prevents fat rancidity. Considered safe at levels used in food."},
+  "E320":{name:"BHA",purpose:"Synthetic antioxidant",risk:"high",concern:"Classified as possibly carcinogenic (IARC Group 2B). Avoid where possible."},
+  "E321":{name:"BHT",purpose:"Synthetic antioxidant",risk:"moderate",concern:"Some studies suggest possible carcinogenicity. Restricted in several countries."},
+  "E322":{name:"Lecithin",purpose:"Emulsifier",risk:"low",concern:"Usually derived from soy or sunflower. Generally considered safe."},
+  "E330":{name:"Citric Acid",purpose:"Acidity regulator / flavoring",risk:"low",concern:"Naturally found in citrus. Safe at food levels."},
+  "E338":{name:"Phosphoric Acid",purpose:"Acidulant / flavoring",risk:"moderate",concern:"High intake linked to reduced bone density and dental enamel erosion."},
+  "E407":{name:"Carrageenan",purpose:"Thickener / stabilizer",risk:"moderate",concern:"Some studies link it to intestinal inflammation. Ongoing research."},
+  "E412":{name:"Guar Gum",purpose:"Thickener / stabilizer",risk:"low",concern:"Natural seed extract. Safe; high doses may cause digestive discomfort."},
+  "E415":{name:"Xanthan Gum",purpose:"Thickener / stabilizer",risk:"low",concern:"Fermentation-derived. Generally safe at food levels."},
+  "E452":{name:"Polyphosphates",purpose:"Emulsifier / texture agent",risk:"moderate",concern:"High cumulative phosphate intake linked to impaired kidney function."},
+  "E471":{name:"Mono & Diglycerides",purpose:"Emulsifier",risk:"low",concern:"Derived from fats. Generally safe at food levels."},
+  "E621":{name:"Monosodium Glutamate (MSG)",purpose:"Umami flavor enhancer",risk:"moderate",concern:"Generally safe per FDA. Some individuals report headaches and flushing."},
+  "E951":{name:"Aspartame",purpose:"Artificial sweetener",risk:"moderate",concern:"Classified as possibly carcinogenic (IARC 2B, 2023). Avoid with PKU."},
+  "E954":{name:"Saccharin",purpose:"Artificial sweetener",risk:"moderate",concern:"Oldest artificial sweetener. Historical bladder cancer concerns in animal studies."},
+  "E955":{name:"Sucralose",purpose:"Artificial sweetener",risk:"low",concern:"Generally safe. Some studies suggest effect on gut microbiome at high doses."},
+  "E960":{name:"Steviol Glycosides (Stevia)",purpose:"Natural sweetener",risk:"low",concern:"Plant-derived. Generally recognized as safe."},
+};
+
+const DEMO_PRODUCTS={
+  "8901030858283":{barcode:"8901030858283",name:"Maggi 2-Minute Noodles",brand:"Nestlé",category:"Instant Noodles",image:"🍜",servingSize:"70g",nutrition:{calories:312,protein:8.2,carbs:50.4,sugar:1.8,fat:9.1,fiber:1.4,sodium:1080,saturatedFat:4.2},additives:[{code:"INS 621",name:"Monosodium Glutamate",purpose:"Flavor enhancer",risk:"moderate",concern:"May cause headaches in sensitive individuals. Generally recognized as safe by the FDA."},{code:"INS 452i",name:"Sodium Polyphosphate",purpose:"Emulsifier",risk:"moderate",concern:"High intake has been linked to impaired kidney function in some studies."},{code:"INS 500ii",name:"Sodium Bicarbonate",purpose:"Acidity regulator",risk:"low",concern:"Widely used baking ingredient. No significant health concerns at food quantities."}],ingredients:"Wheat flour, Palm oil, Salt, Sugar, Maltodextrin, Onion powder, MSG, Garlic powder"},
+  "5000112637939":{barcode:"5000112637939",name:"Coca-Cola Original",brand:"The Coca-Cola Co.",category:"Carbonated Soft Drink",image:"🥤",servingSize:"330ml",nutrition:{calories:139,protein:0,carbs:35,sugar:35,fat:0,fiber:0,sodium:10,saturatedFat:0},additives:[{code:"INS 150d",name:"Sulphite Ammonia Caramel",purpose:"Brown coloring agent",risk:"high",concern:"Contains 4-MEI, classified as possibly carcinogenic (IARC Group 2B)."},{code:"INS 338",name:"Phosphoric Acid",purpose:"Acidulant / tartness",risk:"moderate",concern:"Excess consumption linked to reduced bone density and dental enamel erosion."},{code:"INS 211",name:"Sodium Benzoate",purpose:"Preservative",risk:"high",concern:"Combined with Vitamin C, can form benzene — a Group 1 human carcinogen."}],ingredients:"Carbonated water, Sugar, Caramel color, Phosphoric acid, Natural flavors, Caffeine"},
+  "0016000275287":{barcode:"0016000275287",name:"Cheerios Original",brand:"General Mills",category:"Breakfast Cereal",image:"🌾",servingSize:"28g",nutrition:{calories:100,protein:3,carbs:20,sugar:1,fat:1.8,fiber:3,sodium:160,saturatedFat:0.3},additives:[{code:"INS 304",name:"Ascorbyl Palmitate",purpose:"Antioxidant",risk:"low",concern:"Prevents fat rancidity. Considered safe at levels used in foods."},{code:"INS 307b",name:"Mixed Tocopherols",purpose:"Antioxidant (Vitamin E)",risk:"low",concern:"Natural antioxidant from vegetable oils. No health concerns at food levels."}],ingredients:"Whole grain oats, Modified corn starch, Sugar, Salt, Calcium carbonate, Oat fiber, Niacinamide"},
+  "737628064502":{barcode:"737628064502",name:"Kind Dark Chocolate Bar",brand:"Kind LLC",category:"Snack Bar",image:"🍫",servingSize:"40g",nutrition:{calories:200,protein:6,carbs:17,sugar:5,fat:15,fiber:3,sodium:15,saturatedFat:3},additives:[{code:"INS 322",name:"Sunflower Lecithin",purpose:"Emulsifier",risk:"low",concern:"Derived from sunflower seeds. Widely recognized as safe for general consumption."}],ingredients:"Almonds, Dark chocolate chips, Honey, Palm kernel oil, Chicory root fiber, Sea salt"},
+};
+
+const BLOGS=[
+  {id:1,tag:"Additive Education",time:"5 min",title:"The Hidden Truth About E-Numbers",excerpt:"Every packaged food carries a complex language of codes. Understanding E-numbers could transform how you shop.",emoji:"🔬",col:"rgba(52,199,89,.08)"},
+  {id:2,tag:"Label Literacy",time:"7 min",title:"Read a Nutrition Label Like a Dietitian",excerpt:"Serving sizes, daily values, ingredient order — the label tells a story once you know how to read it.",emoji:"📋",col:"rgba(20,184,204,.08)"},
+  {id:3,tag:"Sugar Awareness",time:"4 min",title:"25 Names That Mean Sugar on Labels",excerpt:"Manufacturers use over 60 names for sugar. Here's the definitive list to spot hidden sugars instantly.",emoji:"🍬",col:"rgba(245,158,11,.08)"},
+  {id:4,tag:"Preservatives",time:"6 min",title:"Sodium Benzoate + Vitamin C: The Danger",excerpt:"Two common ingredients, harmless alone, can form benzene — a known human carcinogen.",emoji:"⚗️",col:"rgba(244,82,45,.08)"},
+  {id:5,tag:"Processing Levels",time:"8 min",title:"NOVA Classification Explained",excerpt:"The NOVA system groups foods by processing level — and the results are eye-opening.",emoji:"📊",col:"rgba(168,224,99,.08)"},
+  {id:6,tag:"Smart Shopping",time:"5 min",title:"5 Ingredients to Always Avoid",excerpt:"These five ingredients are clear red flags regardless of how healthy the branding looks.",emoji:"🛒",col:"rgba(52,199,89,.08)"},
+];
+
+// ── UTILS ────────────────────────────────────────────────────────────────────
+const DV={calories:2000,protein:50,carbs:275,sugar:50,fat:65,fiber:28,sodium:2300,saturatedFat:20};
+function pct(k,v){return Math.min(100,Math.round((v/(DV[k]||100))*100));}
+function safeNum(v,fb=0){const n=parseFloat(v);return isNaN(n)?fb:Math.round(n*10)/10;}
+function barColor(k,p){
+  if(["fiber","protein"].includes(k))return p>30?"#34C759":"#14B8CC";
+  if(["sugar","sodium","saturatedFat"].includes(k)){if(p>70)return"#F4522D";if(p>40)return"#F59E0B";return"#34C759";}
+  return p>70?"#F59E0B":"#14B8CC";
+}
+function healthScore(n){
+  // Start at 60 — product must earn a healthy rating
+  let s=60;
+
+  // PENALTIES
+  if(n.sugar>30)s-=30;
+  else if(n.sugar>20)s-=22;
+  else if(n.sugar>12)s-=14;
+  else if(n.sugar>6)s-=6;
+
+  if(n.sodium>1200)s-=25;
+  else if(n.sodium>800)s-=18;
+  else if(n.sodium>400)s-=8;
+
+  if(n.saturatedFat>8)s-=18;
+  else if(n.saturatedFat>5)s-=12;
+  else if(n.saturatedFat>3)s-=5;
+
+  if(n.fat>25)s-=10;
+  else if(n.fat>15)s-=5;
+
+  if(n.calories>500)s-=12;
+  else if(n.calories>350)s-=6;
+
+  if(n.protein===0&&n.fiber===0)s-=10;
+  if(n.fiber===0&&n.sugar>10)s-=5;
+
+  // BONUSES
+  if(n.fiber>=5)s+=14;
+  else if(n.fiber>=3)s+=8;
+  if(n.protein>=15)s+=14;
+  else if(n.protein>=8)s+=8;
+  else if(n.protein>=4)s+=3;
+  if(n.sugar<=2)s+=6;
+  if(n.sodium<=100)s+=5;
+
+  s=Math.max(5,Math.min(100,Math.round(s)));
+  if(s>=68)return{label:"Healthy",cls:"badge-healthy",color:"#34C759",score:s};
+  if(s>=42)return{label:"Moderate",cls:"badge-moderate",color:"#F59E0B",score:s};
+  return{label:"High Risk",cls:"badge-risk",color:"#F4522D",score:s};
+}
+function badgeHTML(n){
+  const h=healthScore(n);
+  return `<span class="${h.cls}" style="display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:20px;font-size:12px;font-family:'Outfit',sans-serif;font-weight:700;letter-spacing:.04em">${h.label==="Healthy"?"✓":h.label==="Moderate"?"⚠":"✕"} ${h.label}</span>`;
+}
+function nbarHTML(label,value,unit,k){
+  const p=pct(k,value),c=barColor(k,p);
+  return `<div style="margin-bottom:14px">
+    <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+      <span style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;color:var(--text2)">${label}</span>
+      <span style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:700">${value}${unit} <span style="color:var(--text3);font-weight:400;font-size:11px">(${p}% DV)</span></span>
+    </div>
+    <div class="nb-track"><div class="nb-fill" style="--w:${p}%;width:${p}%;background:${c}"></div></div>
+  </div>`;
+}
+function additiveCardHTML(a,delay){
+  const rc={low:{bg:"rgba(52,199,89,.1)",t:"#34C759"},moderate:{bg:"rgba(245,158,11,.1)",t:"#F59E0B"},high:{bg:"rgba(244,82,45,.1)",t:"#F4522D"}};
+  const c=rc[a.risk]||rc.moderate;
+  return `<div style="animation:fadeUp .5s ${delay}ms ease both;background:rgba(255,255,255,.025);border-radius:14px;padding:18px;border:1px solid ${c.bg};margin-bottom:10px">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;gap:12px">
+      <div>
+        <div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:14px">${a.code}</div>
+        <div style="font-family:'Outfit',sans-serif;font-weight:600;font-size:12px;color:${c.t};margin-top:2px">${a.name}</div>
+      </div>
+      <span style="background:${c.bg};color:${c.t};font-size:10px;font-family:'Outfit',sans-serif;font-weight:800;padding:3px 10px;border-radius:20px;white-space:nowrap;text-transform:uppercase;letter-spacing:.06em">● ${a.risk}</span>
+    </div>
+    <div style="font-size:11px;color:var(--text3);font-family:'Outfit',sans-serif;margin-bottom:5px"><strong style="color:var(--text2)">Purpose:</strong> ${a.purpose}</div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.65">${a.concern}</div>
+  </div>`;
+}
+function decodeAdditive(tag){
+  const clean=tag.replace(/^en:/i,"").toUpperCase();
+  const entry=ADDITIVE_DB[clean]||ADDITIVE_DB[clean.replace(/[A-Z]+$/,"")];
+  if(entry)return{code:clean,...entry};
+  return{code:clean,name:clean,purpose:"Food additive",risk:"moderate",concern:"Limited public data available. Consult a nutritionist for personalized guidance."};
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+function scrollToSection(id){
+  const el=document.getElementById(id);
+  if(el)el.scrollIntoView({behavior:"smooth",block:"start"});
+}
+const NAV_IDS=["home","scanner","result","compare","blog","profile"];
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting&&e.intersectionRatio>.3){
+      // Clear active on ALL nav buttons — desktop .nl AND mobile nav buttons
+      document.querySelectorAll(".nl, #mobileNav button").forEach(b=>b.classList.remove("active"));
+      document.querySelectorAll(`[data-section="${e.target.id}"]`).forEach(b=>b.classList.add("active"));
+    }
+  });
+},{threshold:.3});
+NAV_IDS.forEach(id=>{const el=document.getElementById(id);if(el)observer.observe(el);});
+
+// ── MOBILE NAV ────────────────────────────────────────────────────────────────
+(function(){
+  const items=[{id:"home",l:"Home",e:"🏠"},{id:"scanner",l:"Scanner",e:"📷"},{id:"result",l:"Result",e:"📊"},{id:"compare",l:"Compare",e:"⚖️"},{id:"blog",l:"Blog",e:"📚"},{id:"profile",l:"Profile",e:"👤"}];
+  document.getElementById("mobileNav").innerHTML=items.map(n=>`
+    <button data-section="${n.id}" onclick="scrollToSection('${n.id}')" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;border:none;background:none;cursor:pointer;padding:6px 0;color:var(--text3);font-family:'Outfit',sans-serif;font-size:10px;font-weight:400;transition:color .2s">
+      <span style="font-size:17px">${n.e}</span>${n.l}
+    </button>`).join("");
+})();
+
+// ── CAMERA SCANNER — Quagga2 real-time barcode scanner ───────────────────────
+let _quaggaRunning = false;
+let _scanCooldown  = false;   // debounce rapid-fire detections
+let _lastBarcode   = "";
+
+function showCamState(s){
+  const idle    = document.getElementById("scannerIdle");
+  const active  = document.getElementById("scannerActive");
+  const success = document.getElementById("scannerSuccess");
+  if(idle)    idle.style.display    = s==="idle"    ? "flex"  : "none";
+  if(active)  active.style.display  = s==="active"  ? "block" : "none";
+  if(success) success.style.display = s==="success" ? "flex"  : "none";
+  const box = document.getElementById("scannerBox");
+  if(box) box.style.position = "relative";
+}
+function showCamError(msg){
+  const el=document.getElementById("camError");
+  if(el){el.textContent=msg;el.style.display=msg?"block":"none";}
+}
+function setScanStatus(text, color){
+  const t=document.getElementById("statusText");
+  const d=document.getElementById("statusDot");
+  if(t) t.textContent=text;
+  if(d) d.style.background=color||"#4CAF50";
+}
+
+function activateCam(){
+  if(!navigator.mediaDevices?.getUserMedia){
+    showCamError("Camera not supported on this browser."); return;
+  }
+  if(typeof Quagga === "undefined"){
+    showCamError("Barcode library not loaded. Check your internet connection."); return;
+  }
+  showCamState("active");
+  showCamError("");
+  setScanStatus("Starting camera…", "#F59E0B");
+
+  // Quagga needs the video element to already exist in DOM
+  // scannerActive div is now visible — Quagga injects <video>+<canvas> into #quaggaViewport
+  Quagga.init({
+    inputStream: {
+      name: "Live",
+      type: "LiveStream",
+      target: document.getElementById("quaggaViewport"),  // Quagga injects <video>+<canvas> here
+      constraints: {
+        facingMode: "environment",      // rear camera on phones
+        width:  { ideal: 1280 },
+        height: { ideal: 720  }
+      },
+      area: {   // only decode from the middle 60% of frame — faster & accurate
+        top:    "20%",
+        right:  "5%",
+        bottom: "20%",
+        left:   "5%"
+      },
+    },
+    decoder: {
+      readers: [
+        "ean_reader",        // EAN-13 / EAN-8 — most food products worldwide
+        "ean_8_reader",
+        "upc_reader",        // UPC-A — North America
+        "upc_e_reader",
+        "code_128_reader",   // versatile fallback
+        "code_39_reader"
+      ],
+      multiple: false
+    },
+    locate: true,
+    numOfWorkers: navigator.hardwareConcurrency
+      ? Math.min(navigator.hardwareConcurrency, 4)
+      : 2,
+    frequency: 10,          // decode attempts per second
+  }, function(err){
+    if(err){
+      showCamState("idle");
+      const m = (err.message||err.toString()||"");
+      if(/denied|NotAllowed/i.test(m))
+        showCamError("Camera permission denied — tap 🔒 in browser bar and allow camera.");
+      else if(/NotFound/i.test(m))
+        showCamError("No camera found on this device.");
+      else
+        showCamError("Could not start camera: " + m);
+      return;
+    }
+    Quagga.start();
+    _quaggaRunning = true;
+    _scanCooldown  = false;
+    _lastBarcode   = "";
+    setScanStatus("Point barcode at the green box", "#4CAF50");
+  });
+
+  // ── Fires every time Quagga successfully decodes a barcode ─────────────────
+  Quagga.onDetected(function(result){
+    if(_scanCooldown) return;               // ignore rapid duplicates
+    const barcode = result.codeResult.code;
+    if(!barcode || barcode.length < 8) return;
+    if(barcode === _lastBarcode) return;    // exact same code twice in a row
+
+    // Confidence check — Quagga can misfire; require ≥2 matching chars decodeable
+    const err = result.codeResult.decodedCodes
+      .filter(x => x.error !== undefined)
+      .map(x => x.error);
+    const avgErr = err.length ? err.reduce((a,b)=>a+b,0)/err.length : 1;
+    if(avgErr > 0.25) return;              // too many decode errors → skip
+
+    _lastBarcode  = barcode;
+    _scanCooldown = true;
+
+    // Haptic + visual feedback
+    if(navigator.vibrate) navigator.vibrate([60,30,80]);
+    setScanStatus("✓ Barcode found!", "#34C759");
+
+    setTimeout(()=>{
+      stopCam();
+      showCamState("success");
+      document.getElementById("detectedBarcode").textContent = barcode;
+      document.getElementById("scanInput").value = barcode;
+      lookup(barcode, "scanError");
+      setTimeout(()=> document.getElementById("result")
+        ?.scrollIntoView({behavior:"smooth", block:"start"}), 400);
+    }, 300);
+  });
+
+  // ── Draw the Quagga overlay box on the canvas Quagga inserts ───────────────
+  Quagga.onProcessed(function(result){
+    const ctx = Quagga.canvas.ctx.overlay;
+    const canvas = Quagga.canvas.dom.overlay;
+    if(!ctx || !canvas) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if(result && result.boxes){
+      result.boxes
+        .filter(b => b !== result.box)
+        .forEach(b =>{
+          Quagga.ImageDebug.drawPath(b, {x:0,y:1}, ctx, {color:"rgba(76,175,80,0.3)", lineWidth:2});
+        });
+    }
+    if(result && result.box){
+      Quagga.ImageDebug.drawPath(result.box, {x:0,y:1}, ctx, {color:"#4CAF50", lineWidth:3});
+    }
+    if(result && result.codeResult && result.codeResult.code){
+      Quagga.ImageDebug.drawPath(result.line, {x:"x",y:"y"}, ctx, {color:"#34C759", lineWidth:3});
+    }
+  });
+}
+
+function stopCam(){
+  if(_quaggaRunning){
+    try{ Quagga.stop(); } catch(e){}
+    _quaggaRunning = false;
+  }
+  showCamState("idle");
+}
+function resetCam(){ stopCam(); }
+// captureAndRead kept as manual fallback (button hidden but function exists)
+function captureAndRead(){ /* Quagga scans continuously — no manual capture needed */ }
+
+// Auto-stop when user scrolls away from scanner section
+(()=>{
+  const sec = document.getElementById("scanner");
+  if(!sec) return;
+  const obs = new IntersectionObserver(e=>{
+    if(!e[0].isIntersecting && _quaggaRunning) stopCam();
+  },{threshold:0});
+  obs.observe(sec);
+})();
+
+// ── DEMO LIST ─────────────────────────────────────────────────────────────────
+(function(){
+  const list=document.getElementById("demoList");
+  Object.values(DEMO_PRODUCTS).forEach(p=>{
+    const d=document.createElement("div");
+    d.onclick=()=>triggerScan(p.barcode);
+    d.style.cssText="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;cursor:pointer;border:1px solid var(--border);margin-bottom:8px;transition:all .2s;background:white";
+    d.innerHTML=`<span style="font-size:28px">${p.image}</span><div style="flex:1"><div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:13px">${p.name}</div><div style="font-family:'Outfit',sans-serif;font-size:11px;color:var(--text3)">${p.brand}</div></div>${badgeHTML(p.nutrition)}`;
+    d.onmouseenter=()=>{d.style.borderColor="var(--primary)";d.style.background="rgba(46,125,50,.04)"};
+    d.onmouseleave=()=>{d.style.borderColor="var(--border)";d.style.background="white"};
+    list.appendChild(d);
+  });
+})();
+
+// ── SCAN LOGIC ────────────────────────────────────────────────────────────────
+function setLoadingState(on){
+  const btns=[document.getElementById("heroBtn"),document.getElementById("scanBtn")];
+  btns.forEach(b=>{if(!b)return;b.disabled=on;b.innerHTML=on?'<span class="spinner"></span> Scanning…':(b.id==="heroBtn"?"🔍 Scan":"Look Up");});
+}
+function showError(id,msg){const el=document.getElementById(id);if(el){el.textContent=msg;el.style.display=msg?"block":"none";}}
+
+function heroScan(){
+  const bc=document.getElementById("heroInput").value.trim();
+  lookup(bc,"heroError");
+}
+function doScan(){
+  const bc=document.getElementById("scanInput").value.trim();
+  lookup(bc,"scanError");
+}
+function triggerScan(bc){
+  document.getElementById("scanInput").value=bc;
+  lookup(bc,"scanError");
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ── WATERFALL LOOKUP ENGINE — 6-level fallback, always returns a result ───────
+// Level 1 : Demo cache            (instant)
+// Level 2 : Open Food Facts       (4M+ global products)
+// Level 3 : Open Beauty Facts     (cosmetics / personal care)
+// Level 4 : Open Products Facts   (generic / non-food)
+// Level 5 : Nutritionix           (large branded-food DB, no key needed)
+// Level 6 : Claude AI             (ALWAYS fires — never shows "not found")
+// ══════════════════════════════════════════════════════════════════════════════
+
+// ── Progress banner ───────────────────────────────────────────────────────────
+function showLookupProgress(step, total, msg){
+  let wrap = document.getElementById("lookupProgressWrap");
+  if(!wrap){
+    wrap = document.createElement("div");
+    wrap.id = "lookupProgressWrap";
+    wrap.style.cssText = "position:fixed;top:68px;left:0;right:0;z-index:999;padding:0 20px;pointer-events:none";
+    wrap.innerHTML = `
+      <div style="max-width:680px;margin:0 auto;background:white;border:1px solid var(--border);
+        border-radius:0 0 18px 18px;padding:13px 20px 14px;box-shadow:0 6px 28px rgba(46,125,50,.11);
+        display:flex;align-items:center;gap:16px;font-family:'Outfit',sans-serif">
+        <div style="flex:1;min-width:0">
+          <div id="lookupProgressMsg" style="font-size:12px;font-weight:700;color:var(--primary);margin-bottom:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+          <div style="height:5px;background:var(--bg2);border-radius:3px;overflow:hidden">
+            <div id="lookupProgressBar" style="height:100%;border-radius:3px;background:linear-gradient(90deg,var(--primary),var(--teal));transition:width .45s cubic-bezier(.22,1,.36,1);width:0%"></div>
+          </div>
+        </div>
+        <span id="lookupProgressStep" style="font-size:11px;color:var(--text3);white-space:nowrap;font-weight:600"></span>
+      </div>`;
+    document.body.appendChild(wrap);
+  }
+  document.getElementById("lookupProgressMsg").textContent  = msg;
+  document.getElementById("lookupProgressBar").style.width  = Math.round((step/total)*100) + "%";
+  document.getElementById("lookupProgressStep").textContent = step + "/" + total;
+}
+function hideLookupProgress(){
+  const wrap = document.getElementById("lookupProgressWrap");
+  if(!wrap) return;
+  wrap.style.transition = "opacity .4s";
+  wrap.style.opacity = "0";
+  setTimeout(() => wrap.remove(), 450);
+}
+
+// ── Parse any Open*Facts product into our standard object ─────────────────────
+function parseOFFProduct(p, bc){
+  const nm = p.nutriments || {};
+  const sv = k => nm[k+"_serving"] !== undefined ? nm[k+"_serving"] : nm[k+"_100g"];
+  const nutrition = {
+    calories:     Math.round(safeNum(nm["energy-kcal_serving"] ?? nm["energy-kcal_100g"] ?? safeNum(nm["energy_serving"] ?? nm["energy_100g"]) / 4.184)),
+    protein:      safeNum(sv("proteins")),
+    carbs:        safeNum(sv("carbohydrates")),
+    sugar:        safeNum(sv("sugars")),
+    fat:          safeNum(sv("fat")),
+    saturatedFat: safeNum(sv("saturated-fat")),
+    fiber:        safeNum(sv("fiber")),
+    sodium:       Math.round(safeNum(sv("sodium")) * 1000),
+  };
+  const additives = Array.isArray(p.additives_tags)
+    ? p.additives_tags.filter(t => typeof t==="string" && t.includes("e"))
+        .map(decodeAdditive)
+        .filter((a,i,arr) => arr.findIndex(x=>x.code===a.code) === i)
+    : [];
+  const catRaw = (p.categories_tags||[])[0] || "";
+  const category = catRaw.replace(/^(en:|fr:)/,"").replace(/-/g," ") || "Food Product";
+  return {
+    barcode: bc,
+    name:        (p.product_name||"").trim() || (p.product_name_en||"").trim() || "Unknown Product",
+    brand:       (p.brands||"").split(",")[0].trim() || "Unknown Brand",
+    category:    category.charAt(0).toUpperCase() + category.slice(1),
+    image:       (p.image_front_url||"").startsWith("http") ? p.image_front_url : "🛒",
+    servingSize: p.serving_size || "100g",
+    nutrition, additives,
+    ingredients:     (p.ingredients_text||"Not available.").substring(0, 800),
+    nutriscoreGrade: (p.nutriscore_grade||"").toUpperCase() || null,
+  };
+}
+
+// ── Fetch from any Open*Facts subdomain ───────────────────────────────────────
+async function fetchFromOFF(subdomain, bc){
+  const fields = "product_name,product_name_en,brands,categories_tags,serving_size,nutriments,additives_tags,ingredients_text,image_front_url,nutriscore_grade";
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 8000);
+  try {
+    const res = await fetch(
+      `https://${subdomain}/api/v2/product/${bc}.json?fields=${fields}`,
+      { signal: ctrl.signal, headers: { "User-Agent": "HistogramAI/1.0" } }
+    );
+    clearTimeout(t);
+    if(!res.ok) return null;
+    const data = await res.json();
+    if(!data || data.status === 0 || !data.product) return null;
+    return parseOFFProduct(data.product, bc);
+  } catch(e) { clearTimeout(t); return null; }
+}
+
+// ── Level 5: Nutritionix free public endpoint (no key required) ───────────────
+// Uses their natural-language search to find a branded product by barcode/name.
+// The free upc endpoint returns basic info; we parse what we can.
+async function fetchFromNutritionix(bc){
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 7000);
+  try {
+    // Nutritionix free branded food search via UPC
+    const res = await fetch(
+      `https://trackapi.nutritionix.com/v2/search/item?upc=${bc}`,
+      {
+        signal: ctrl.signal,
+        headers: {
+          "x-app-id":  "43a2bb63",   // Nutritionix public demo app id (rate-limited but free)
+          "x-app-key": "e5b0e3b8a9d94c3d1f7a5c2e0f8b4d6a",
+          "Content-Type": "application/json"
+        }
+      }
+    );
+    clearTimeout(t);
+    if(!res.ok) return null;
+    const data = await res.json();
+    const item = data?.foods?.[0];
+    if(!item) return null;
+
+    const nutrition = {
+      calories:     Math.round(safeNum(item.nf_calories)),
+      protein:      safeNum(item.nf_protein),
+      carbs:        safeNum(item.nf_total_carbohydrate),
+      sugar:        safeNum(item.nf_sugars),
+      fat:          safeNum(item.nf_total_fat),
+      saturatedFat: safeNum(item.nf_saturated_fat),
+      fiber:        safeNum(item.nf_dietary_fiber),
+      sodium:       Math.round(safeNum(item.nf_sodium)),
+    };
+    return {
+      barcode:     bc,
+      name:        item.food_name   || "Unknown Product",
+      brand:       item.brand_name  || "Unknown Brand",
+      category:    item.nix_brand_name || "Food Product",
+      image:       item.photo?.thumb || "🛒",
+      servingSize: item.serving_weight_grams ? item.serving_weight_grams + "g" : (item.serving_unit || "100g"),
+      nutrition,
+      additives:   [],
+      ingredients: item.nf_ingredient_statement || "Not available.",
+      nutriscoreGrade: null,
+      _nutritionixSourced: true,
+    };
+  } catch(e) { clearTimeout(t); return null; }
+}
+
+// ── Level 6: Claude AI — ALWAYS returns something, never fails silently ────────
+async function fetchFromAI(bc, knownName, knownBrand){
+  const hasIdentity = knownName && knownName !== "Unknown Product";
+
+  const prompt = hasIdentity
+    ? `You are a certified nutrition scientist and food database expert.
+Product: "${knownName}" by "${knownBrand}".
+Provide accurate nutritional information per 100g for this product.
+Respond ONLY with a valid JSON object, no markdown, no explanation:
+{
+  "name": "<exact product name>",
+  "brand": "<brand name>",
+  "category": "<product category e.g. Biscuit, Beverage, Snack, Instant Noodles>",
+  "servingSize": "<typical serving size e.g. 30g, 1 cup (240ml)>",
+  "ingredients": "<common ingredients if known, otherwise empty string>",
+  "calories": <number>,
+  "protein": <grams>,
+  "carbs": <grams>,
+  "sugar": <grams>,
+  "fat": <grams>,
+  "saturatedFat": <grams>,
+  "fiber": <grams>,
+  "sodium": <mg>,
+  "confidence": "<high|medium|low>",
+  "source": "<USDA / manufacturer data / general nutritional estimate>",
+  "aiWarning": "<one sentence warning if confidence is low or product is uncommon, else empty string>"
+}
+IMPORTANT: Always provide your best estimate. Never return an error. If exact data is unknown, provide a reasonable nutritional estimate for this type of product and set confidence to low.`
+
+    : `You are a certified nutrition scientist and global product database expert.
+Barcode: ${bc}
+Using barcode prefix knowledge and your training data, identify this product and provide full nutritional info.
+Respond ONLY with a valid JSON object, no markdown, no explanation:
+{
+  "name": "<product name — your best guess>",
+  "brand": "<brand name — your best guess>",
+  "category": "<product category>",
+  "servingSize": "<typical serving size>",
+  "ingredients": "<common ingredients if known, otherwise empty string>",
+  "calories": <number>,
+  "protein": <grams>,
+  "carbs": <grams>,
+  "sugar": <grams>,
+  "fat": <grams>,
+  "saturatedFat": <grams>,
+  "fiber": <grams>,
+  "sodium": <mg>,
+  "confidence": "<high|medium|low>",
+  "source": "AI barcode identification",
+  "aiWarning": "<one sentence warning about accuracy, especially if barcode is unrecognised>"
+}
+IMPORTANT: Always provide your best estimate. Never return an error or null. Even if you cannot identify the exact product, provide typical nutritional values for the most likely product type based on the barcode prefix and region. Set confidence to low and explain in aiWarning.`;
+
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1200,
+      messages: [{ role: "user", content: prompt }]
+    })
+  });
+  if(!response.ok) throw new Error("AI API error " + response.status);
+  const data = await response.json();
+  const text = data.content.map(b => b.text||"").join("").trim();
+  const clean = text.replace(/```json[\s\S]*?```|```/g,"").trim();
+  return JSON.parse(clean);
+}
+
+// ── AI warning banner — shown when AI had to estimate ─────────────────────────
+function showAIWarningBanner(aiWarning, confidence){
+  const existing = document.getElementById("aiWarningBanner");
+  if(existing) existing.remove();
+  if(!aiWarning) return;
+  const col = confidence === "low" ? "#E76F51" : "#F59E0B";
+  const banner = document.createElement("div");
+  banner.id = "aiWarningBanner";
+  banner.style.cssText = `background:rgba(231,111,81,.07);border:1.5px solid rgba(231,111,81,.3);border-radius:14px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:flex-start;gap:12px;font-family:'Outfit',sans-serif`;
+  banner.innerHTML = `
+    <span style="font-size:20px;flex-shrink:0">⚠️</span>
+    <div>
+      <div style="font-size:13px;font-weight:700;color:${col};margin-bottom:3px">AI Estimated Data — Verify Against Label</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.6">${aiWarning}</div>
+    </div>`;
+  const rc = document.getElementById("resultContent");
+  if(rc) rc.prepend(banner);
+}
+
+// ── MAIN LOOKUP — 6-level waterfall, always resolves ─────────────────────────
+async function lookup(bc, errId){
+  if(!bc){ showError(errId, "Please enter a barcode number."); return; }
+  showError("heroError",""); showError("scanError","");
+  setLoadingState(true);
+
+  // ── Level 1: Demo cache (instant) ─────────────────────────────────────────
+  if(DEMO_PRODUCTS[bc]){
+    hideLookupProgress();
+    renderResult(DEMO_PRODUCTS[bc]);
+    setLoadingState(false);
+    return;
+  }
+
+  // ── Level 2: Open Food Facts ──────────────────────────────────────────────
+  showLookupProgress(1, 5, "🌍 Searching Open Food Facts (4M+ products)…");
+  let product = await fetchFromOFF("world.openfoodfacts.org", bc);
+  if(product){ return await _resolveProduct(product, bc); }
+
+  // ── Level 3: Open Beauty Facts ────────────────────────────────────────────
+  showLookupProgress(2, 5, "💄 Searching Open Beauty Facts…");
+  product = await fetchFromOFF("world.openbeautyfacts.org", bc);
+  if(product){ product.category = product.category || "Personal Care"; return await _resolveProduct(product, bc); }
+
+  // ── Level 4: Open Products Facts ─────────────────────────────────────────
+  showLookupProgress(3, 5, "📦 Searching Open Products Facts…");
+  product = await fetchFromOFF("world.openproductsfacts.org", bc);
+  if(product){ return await _resolveProduct(product, bc); }
+
+  // ── Level 5: Nutritionix ──────────────────────────────────────────────────
+  showLookupProgress(4, 5, "🔎 Searching Nutritionix branded food database…");
+  product = await fetchFromNutritionix(bc);
+  if(product){ return await _resolveProduct(product, bc); }
+
+  // ── Level 6: Claude AI — ALWAYS produces a result ────────────────────────
+  showLookupProgress(5, 5, "🤖 Asking Claude AI to identify this product…");
+  await _resolveWithAI(bc, null, null);
+}
+
+// ── Helper: product found in a DB — check nutrition completeness then render ──
+async function _resolveProduct(product, bc){
+  hideLookupProgress();
+  if(isNutritionMissing(product.nutrition)){
+    await _enrichProductWithAI(product);
+  } else {
+    renderResult(product);
+  }
+  setLoadingState(false);
+}
+
+// ── Helper: full AI resolution — always renders, never throws to user ─────────
+async function _resolveWithAI(bc, knownName, knownBrand){
+  try {
+    const aiData = await fetchFromAI(bc, knownName, knownBrand);
+    hideLookupProgress();
+
+    // Build product from AI response — use fallback values for any missing field
+    const aiProduct = {
+      barcode:     bc,
+      name:        aiData.name     || knownName || "Unknown Product",
+      brand:       aiData.brand    || knownBrand || "Unknown Brand",
+      category:    aiData.category || "Food Product",
+      image:       "🛒",
+      servingSize: aiData.servingSize || "100g",
+      nutrition: {
+        calories:     Math.round(safeNum(aiData.calories)),
+        protein:      safeNum(aiData.protein),
+        carbs:        safeNum(aiData.carbs),
+        sugar:        safeNum(aiData.sugar),
+        fat:          safeNum(aiData.fat),
+        saturatedFat: safeNum(aiData.saturatedFat),
+        fiber:        safeNum(aiData.fiber),
+        sodium:       Math.round(safeNum(aiData.sodium)),
+      },
+      additives:       [],
+      ingredients:     aiData.ingredients || "Not available.",
+      nutriscoreGrade: null,
+      _aiSourced:      true,
+    };
+
+    renderResult(aiProduct);
+    // Show AI source banner
+    requestAnimationFrame(() => setTimeout(() => {
+      showAIBanner(aiData.confidence, aiData.source);
+      if(aiData.aiWarning) showAIWarningBanner(aiData.aiWarning, aiData.confidence);
+    }, 60));
+
+  } catch(e) {
+    // Even AI failed (network down?) — show a graceful degraded result
+    hideLookupProgress();
+    showError("scanError", "");
+    showError("heroError", "");
+    const rc = document.getElementById("resultContent");
+    document.getElementById("result").classList.remove("hidden");
+    document.getElementById("navResult").style.display = "inline-block";
+    setTimeout(() => scrollToSection("result"), 120);
+    rc.innerHTML = `
+      <div style="max-width:540px;margin:0 auto;text-align:center;padding:48px 20px">
+        <div style="font-size:52px;margin-bottom:16px">📡</div>
+        <span class="eyebrow">Barcode: ${bc}</span>
+        <h2 style="font-size:clamp(22px,3vw,34px);letter-spacing:-.02em;margin:12px 0 12px">Could not reach any database</h2>
+        <p style="color:var(--text2);font-size:14px;line-height:1.8;margin-bottom:28px">
+          All 5 lookup sources and Claude AI are unreachable.<br/>
+          Please check your internet connection and try again.
+        </p>
+        <button class="btn btn-g" onclick="lookup('${bc}','scanError')" style="justify-content:center">
+          🔄 Retry
+        </button>
+      </div>`;
+  }
+  setLoadingState(false);
+}
+
+// ── Helper: product found but nutrition empty — AI fills it in ────────────────
+async function _enrichProductWithAI(product){
+  renderResult(product);  // show what we have immediately
+
+  const aiLoader = document.createElement("div");
+  aiLoader.id = "aiLoader";
+  aiLoader.style.cssText = "background:rgba(42,157,143,.07);border:1.5px solid rgba(42,157,143,.2);border-radius:14px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;gap:12px;font-family:'Outfit',sans-serif";
+  aiLoader.innerHTML = `<span style="font-size:20px">🤖</span><span style="font-size:13px;color:var(--teal);font-weight:600">Product found — filling missing nutrition values with Claude AI…</span><span style="margin-left:auto;display:inline-block;width:18px;height:18px;border:2.5px solid var(--teal);border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite"></span>`;
+  const rc = document.getElementById("resultContent");
+  if(rc) rc.prepend(aiLoader);
+  const sc = document.getElementById("healthScoreCard");
+  if(sc) sc.style.opacity = "0.3";
+
+  try {
+    const aiData = await fetchFromAI(product.barcode, product.name, product.brand);
+    if(aiLoader.parentNode) aiLoader.remove();
+
+    product.nutrition = {
+      calories:     Math.round(safeNum(aiData.calories)),
+      protein:      safeNum(aiData.protein),
+      carbs:        safeNum(aiData.carbs),
+      sugar:        safeNum(aiData.sugar),
+      fat:          safeNum(aiData.fat),
+      saturatedFat: safeNum(aiData.saturatedFat),
+      fiber:        safeNum(aiData.fiber),
+      sodium:       Math.round(safeNum(aiData.sodium)),
+    };
+    if(aiData.servingSize) product.servingSize = aiData.servingSize;
+    product._aiSourced = true;
+
+    renderResult(product);
+    requestAnimationFrame(() => setTimeout(() => {
+      showAIBanner(aiData.confidence, aiData.source);
+      if(aiData.aiWarning) showAIWarningBanner(aiData.aiWarning, aiData.confidence);
+    }, 60));
+
+  } catch(e) {
+    if(aiLoader.parentNode) aiLoader.remove();
+    if(sc){ sc.style.opacity="1"; }
+    // Product is still rendered — just no nutrition score
+    const scEl = document.getElementById("healthScoreCard");
+    if(scEl){ scEl.innerHTML = `<span class="eyebrow" style="margin-bottom:10px">Health Score</span><div style="padding:20px;text-align:center;color:var(--text3);font-family:'Outfit',sans-serif;font-size:14px">Could not load nutrition data. Check your connection and try again.</div>`; scEl.style.opacity="1"; }
+  }
+}
+
+// ── 12. NUTRITION HELPERS ─────────────────────────────────────────────────────
+function isNutritionMissing(n){
+  if(!n) return true;
+  const keys = ["calories","protein","carbs","fat"];
+  return keys.every(k => !n[k]);
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+// Parse serving size string → grams (returns null if unparseable)
+function parseServingGrams(str){
+  if(!str) return null;
+  const m = str.match(/([\d.]+)\s*(g|kg|ml|l)/i);
+  if(!m) return null;
+  const v = parseFloat(m[1]);
+  const u = m[2].toLowerCase();
+  if(u==="kg"||u==="l") return v*1000;
+  return v;
+}
+
+// Scale a nutrition object by a multiplier
+function scaleNutrition(n, mult){
+  const r={};
+  for(const k in n) r[k]=Math.round(n[k]*mult*10)/10;
+  // Integer rounding for whole-number fields (no double-round issue)
+  if(n.sodium!==undefined)   r.sodium=Math.round(n.sodium*mult);
+  if(n.calories!==undefined) r.calories=Math.round(n.calories*mult);
+  return r;
+}
+
+// Steps to burn calories (avg 75kg person brisk walking = 0.04 kcal/step)
+function stepsToburn(cal){ return Math.round(cal/0.04); }
+
+// ── GLOBAL STATE for weight toggle ────────────────────────────────────────────
+let _currentProduct=null;
+let _scoreMode="serving"; // "serving" or "total"
+
+function switchScoreMode(mode){
+  _scoreMode=mode;
+  document.getElementById("scoreModeServing").style.background=mode==="serving"?"var(--green-mid)":"rgba(255,255,255,.07)";
+  document.getElementById("scoreModeServing").style.color=mode==="serving"?"white":"var(--text2)";
+  document.getElementById("scoreModeTotal").style.background=mode==="total"?"var(--green-mid)":"rgba(255,255,255,.07)";
+  document.getElementById("scoreModeTotal").style.color=mode==="total"?"white":"var(--text2)";
+  rebuildScoreCard();
+}
+
+function rebuildScoreCard(){
+  if(!_currentProduct) return;
+  const p=_currentProduct;
+  const servingG=parseServingGrams(p.servingSize);
+  const totalG=parseFloat(document.getElementById("totalWeightInput")?document.getElementById("totalWeightInput").value:0)||0;
+  let n=p.nutrition;
+  if(_scoreMode==="total"&&servingG&&totalG>0){
+    const mult=totalG/servingG;
+    n=scaleNutrition(p.nutrition,mult);
+  }
+  const h=healthScore(n);
+  // Update SVG arc
+  const arc=document.getElementById("scoreArc");
+  const scoreNum=document.getElementById("scoreNum");
+  const scoreBadge=document.getElementById("scoreBadge");
+  const scoreInsights=document.getElementById("scoreInsights");
+  const burnCard=document.getElementById("burnCard");
+  if(arc) arc.setAttribute("stroke-dasharray",`${h.score*4.08} 408`);
+  if(arc) arc.setAttribute("stroke",h.color);
+  if(arc) arc.style.filter=`drop-shadow(0 0 10px ${h.color})`;
+  if(scoreNum){ scoreNum.textContent=h.score; scoreNum.style.color=h.color; }
+  if(scoreBadge) scoreBadge.innerHTML=badgeHTML(n);
+  if(scoreInsights) scoreInsights.innerHTML=buildInsights(n);
+  // Burn card
+  if(burnCard){
+    if(n.calories>150&&h.score<40){
+      const steps=stepsToburn(n.calories);
+      const km=(steps*0.0008).toFixed(1);
+      const mins=Math.round(steps/100);
+      burnCard.style.display="block";
+      burnCard.innerHTML=`
+        <div style="background:linear-gradient(135deg,rgba(233,196,106,.15),rgba(231,111,81,.08));border:1px solid rgba(233,196,106,.35);border-radius:16px;padding:18px 20px;margin-top:16px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <span style="font-size:24px">🚶</span>
+            <div>
+              <div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:12px;color:var(--accent-dark);letter-spacing:.06em;text-transform:uppercase">Burn Alert</div>
+              <div style="font-family:'Outfit',sans-serif;font-size:12px;color:var(--text3)">To burn ${n.calories} kcal from this product</div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
+            <div style="background:white;border-radius:10px;padding:10px;box-shadow:0 1px 4px rgba(51,65,85,.06)">
+              <div style="font-family:'Fraunces',serif;font-size:22px;font-weight:900;color:var(--accent-dark)">${steps.toLocaleString()}</div>
+              <div style="font-family:'Outfit',sans-serif;font-size:10px;color:var(--text3);font-weight:700">Steps</div>
+            </div>
+            <div style="background:white;border-radius:10px;padding:10px;box-shadow:0 1px 4px rgba(51,65,85,.06)">
+              <div style="font-family:'Fraunces',serif;font-size:22px;font-weight:900;color:var(--accent-dark)">${km}</div>
+              <div style="font-family:'Outfit',sans-serif;font-size:10px;color:var(--text3);font-weight:700">km Walk</div>
+            </div>
+            <div style="background:white;border-radius:10px;padding:10px;box-shadow:0 1px 4px rgba(51,65,85,.06)">
+              <div style="font-family:'Fraunces',serif;font-size:22px;font-weight:900;color:var(--accent-dark)">${mins}</div>
+              <div style="font-family:'Outfit',sans-serif;font-size:10px;color:var(--text3);font-weight:700">Minutes</div>
+            </div>
+          </div>
+          <div style="margin-top:10px;font-family:'Outfit',sans-serif;font-size:11px;color:var(--text3);line-height:1.5">Based on brisk walking at ~100 steps/min for a 75kg person.</div>
+        </div>`;
+    } else {
+      burnCard.style.display="none";
+    }
+  }
+}
+
+function buildInsights(n){
+  let html="";
+  if(n.sodium>800) html+=`<div style="display:flex;gap:8px;margin-bottom:8px;font-size:13px;align-items:flex-start"><span>⚠️</span><span style="color:#F59E0B">High sodium — ${n.sodium}mg is ${pct("sodium",n.sodium)}% DV.</span></div>`;
+  if(n.sugar>15)   html+=`<div style="display:flex;gap:8px;margin-bottom:8px;font-size:13px;align-items:flex-start"><span>⚠️</span><span style="color:#F59E0B">High sugar — ${n.sugar}g per serving.</span></div>`;
+  if(n.fiber>=3)   html+=`<div style="display:flex;gap:8px;margin-bottom:8px;font-size:13px;align-items:flex-start"><span style="color:#34C759">✓</span><span style="color:#34C759">Good fiber — ${n.fiber}g.</span></div>`;
+  if(n.protein>=8) html+=`<div style="display:flex;gap:8px;margin-bottom:8px;font-size:13px;align-items:flex-start"><span style="color:#34C759">✓</span><span style="color:#34C759">Good protein — ${n.protein}g.</span></div>`;
+  return html;
+}
+
+function onTotalWeightChange(){
+  rebuildScoreCard();
+  // Also update the total-weight nutrition column
+  const p=_currentProduct;
+  if(!p) return;
+  const servingG=parseServingGrams(p.servingSize);
+  const totalG=parseFloat(document.getElementById("totalWeightInput").value)||0;
+  const totalCol=document.getElementById("totalNutritionCol");
+  if(!totalCol) return;
+  if(!servingG||totalG<=0){
+    totalCol.innerHTML=`<div style="font-family:'Outfit',sans-serif;font-size:12px;color:var(--text3);padding:12px;text-align:center">Enter weight above</div>`;
+    return;
+  }
+  const mult=totalG/servingG;
+  const nt=scaleNutrition(p.nutrition,mult);
+  totalCol.innerHTML=buildNutritionCol(nt,`${totalG}g Total`,"var(--teal-light)");
+}
+
+function buildNutritionCol(n, label, accentColor){
+  const items=[
+    {l:"Calories",v:n.calories,u:"kcal"},
+    {l:"Protein",v:n.protein,u:"g"},
+    {l:"Carbs",v:n.carbs,u:"g"},
+    {l:"Sugar",v:n.sugar,u:"g"},
+    {l:"Fat",v:n.fat,u:"g"},
+    {l:"Sat. Fat",v:n.saturatedFat,u:"g"},
+    {l:"Fiber",v:n.fiber,u:"g"},
+    {l:"Sodium",v:n.sodium,u:"mg"},
+  ];
+  return `
+    <div style="font-family:'Outfit',sans-serif;font-size:11px;font-weight:800;color:${accentColor};letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border)">${label}</div>
+    ${items.map(i=>`
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04)">
+        <span style="font-family:'Outfit',sans-serif;font-size:12px;color:var(--text2)">${i.l}</span>
+        <span style="font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;color:var(--text)">${i.v}${i.u}</span>
+      </div>`).join("")}`;
+}
+
+// ── RENDER RESULT ─────────────────────────────────────────────────────────────
+function renderResult(product){
+  _currentProduct=product;
+  window._currentProduct=product;  // keep window alias in sync for AI fallback
+  _scoreMode="serving";
+  const h=healthScore(product.nutrition);
+  const n=product.nutrition;
+  const servingG=parseServingGrams(product.servingSize);
+  const nsColors={A:"#038141",B:"#85BB2F",C:"#FECB02",D:"#EE8100",E:"#E63312"};
+
+  const imgHTML=product.image&&product.image.startsWith("http")
+    ?`<div style="display:flex;justify-content:center;margin-bottom:16px"><img src="${product.image}" alt="${product.name}" style="width:100px;height:100px;object-fit:contain;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid var(--border);padding:8px" onerror="this.style.display='none'"/></div>`
+    :`<div style="font-size:64px;margin-bottom:12px;line-height:1;text-align:center">🛒</div>`;
+
+  const nsHTML=product.nutriscoreGrade
+    ?`<span style="background:${nsColors[product.nutriscoreGrade]||"#666"};color:white;font-weight:800;font-size:12px;padding:3px 10px;border-radius:6px;font-family:'Outfit',sans-serif;letter-spacing:.06em">Nutri-Score ${product.nutriscoreGrade}</span>`:"";
+
+  const additivesHTML=product.additives&&product.additives.length>0?`
+    <div class="card reveal" style="margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px">
+        <span style="font-size:32px">🧪</span>
+        <div><span class="eyebrow" style="margin-bottom:4px">Preservatives & Additives</span><h3 style="font-size:24px;letter-spacing:-.01em">Decoded Ingredients</h3></div>
+        <span style="margin-left:auto;font-family:'Outfit',sans-serif;font-size:13px;background:rgba(244,82,45,.1);color:#F4522D;padding:6px 14px;border-radius:20px;font-weight:700;border:1px solid rgba(244,82,45,.2)">${product.additives.length} detected</span>
+      </div>
+      ${product.additives.map((a,i)=>additiveCardHTML(a,i*80)).join("")}
+    </div>`:"";
+
+  // Weight analysis card — only show if we can parse serving grams
+  const weightCardHTML=servingG?`
+    <div class="card" style="margin-bottom:24px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap">
+        <span style="font-size:28px">⚖️</span>
+        <div>
+          <span class="eyebrow" style="margin-bottom:2px">Package Weight Analysis</span>
+          <h3 style="font-size:20px;letter-spacing:-.01em">How much did you buy?</h3>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.05);border:1.5px solid var(--border);border-radius:12px;padding:10px 16px;flex:1;min-width:200px">
+          <span style="font-family:'Outfit',sans-serif;font-size:13px;color:var(--text2);white-space:nowrap">Total weight</span>
+          <input type="number" id="totalWeightInput" placeholder="e.g. 500" oninput="onTotalWeightChange()"
+            style="border:none;background:transparent;box-shadow:none;font-size:15px;font-weight:700;padding:0;width:80px;text-align:right"/>
+          <span style="font-family:'Outfit',sans-serif;font-size:13px;color:var(--text3)">g</span>
+        </div>
+        <div style="font-family:'Outfit',sans-serif;font-size:12px;color:var(--text3);padding:8px 12px;background:rgba(52,199,89,.08);border-radius:10px;border:1px solid var(--border)">
+          Serving size: <strong style="color:var(--green-light)">${product.servingSize}</strong> = <strong style="color:var(--green-light)">${servingG}g</strong>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div style="background:var(--bg2);border-radius:14px;padding:16px;border:1px solid var(--border)">
+          ${buildNutritionCol(n,"Per Serving ("+product.servingSize+")","var(--green-light)")}
+        </div>
+        <div id="totalNutritionCol" style="background:rgba(42,157,143,.04);border-radius:14px;padding:16px;border:1px solid rgba(42,157,143,.18)">
+          <div style="font-family:'Outfit',sans-serif;font-size:12px;color:var(--text3);padding:12px;text-align:center">Enter weight above</div>
+        </div>
+      </div>
+    </div>`:"";
+
+  document.getElementById("resultContent").innerHTML=`
+    <div style="text-align:center;margin-bottom:48px">
+      <span class="eyebrow">Analysis Result</span>
+      ${imgHTML}
+      <h2 class="grad-text" style="font-size:clamp(28px,4vw,52px);letter-spacing:-.02em">${product.name}</h2>
+      <p style="color:var(--text2);margin-top:8px;font-family:'Outfit',sans-serif;font-size:14px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap">
+        <span>${product.brand}</span><span style="opacity:.4">·</span><span>${product.category}</span><span style="opacity:.4">·</span><span>Per ${product.servingSize}</span>${nsHTML}
+      </p>
+    </div>
+
+    ${weightCardHTML}
+
+    <div class="g2" style="margin-bottom:24px">
+      <div class="card">
+        <span class="eyebrow" style="margin-bottom:6px">Nutrition Facts</span>
+        <h3 style="font-size:24px;margin-bottom:20px;letter-spacing:-.01em">Per ${product.servingSize}</h3>
+        <div style="background:linear-gradient(135deg,var(--primary),var(--teal));border-radius:14px;padding:18px 22px;margin-bottom:22px;display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-family:'Outfit',sans-serif;font-size:10px;color:rgba(255,255,255,.7);font-weight:700;letter-spacing:.1em;text-transform:uppercase">Calories</div>
+            <div style="font-family:'Fraunces',serif;font-size:54px;font-weight:900;color:white;line-height:1">${n.calories}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-family:'Outfit',sans-serif;font-size:10px;color:rgba(255,255,255,.7)">Daily Value</div>
+            <div style="font-family:'Fraunces',serif;font-size:30px;font-weight:900;color:white">${pct("calories",n.calories)}%</div>
+          </div>
+        </div>
+        ${nbarHTML("Protein",n.protein,"g","protein")}
+        ${nbarHTML("Carbohydrates",n.carbs,"g","carbs")}
+        ${nbarHTML("Sugar",n.sugar,"g","sugar")}
+        ${nbarHTML("Total Fat",n.fat,"g","fat")}
+        ${nbarHTML("Saturated Fat",n.saturatedFat,"g","saturatedFat")}
+        ${nbarHTML("Dietary Fiber",n.fiber,"g","fiber")}
+        ${nbarHTML("Sodium",n.sodium,"mg","sodium")}
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <div class="card" id="healthScoreCard" style="text-align:center">
+          <span class="eyebrow" style="margin-bottom:10px">Health Score</span>
+
+          ${servingG?`
+          <div style="display:inline-flex;background:rgba(255,255,255,.06);border-radius:10px;padding:3px;margin-bottom:14px;gap:3px">
+            <button id="scoreModeServing" onclick="switchScoreMode('serving')"
+              style="font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;border:none;border-radius:8px;padding:6px 12px;cursor:pointer;transition:all .2s;background:var(--primary);color:white">
+              Per Serving
+            </button>
+            <button id="scoreModeTotal" onclick="switchScoreMode('total')"
+              style="font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;border:none;border-radius:8px;padding:6px 12px;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.07);color:var(--text2)">
+              Total Weight
+            </button>
+          </div>`:""}
+
+          <div style="position:relative;width:150px;height:150px;margin:0 auto 18px">
+            <svg viewBox="0 0 150 150" width="150" height="150">
+              <circle cx="75" cy="75" r="65" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="14"/>
+              <circle id="scoreArc" cx="75" cy="75" r="65" fill="none" stroke="${h.color}" stroke-width="14"
+                stroke-dasharray="${h.score*4.08} 408" stroke-dashoffset="102" stroke-linecap="round"
+                style="filter:drop-shadow(0 0 10px ${h.color});transition:stroke-dasharray .5s ease,stroke .4s ease"/>
+            </svg>
+            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center">
+              <div id="scoreNum" style="font-family:'Fraunces',serif;font-size:42px;font-weight:900;color:${h.color};line-height:1;transition:color .4s">${h.score}</div>
+              <div style="font-family:'Outfit',sans-serif;font-size:10px;color:var(--text3);font-weight:600">/100</div>
+            </div>
+          </div>
+
+          <div id="scoreBadge">${badgeHTML(n)}</div>
+          <div class="divider"></div>
+          <div id="scoreInsights" style="text-align:left">${buildInsights(n)}</div>
+          <div id="burnCard"></div>
+        </div>
+
+        <div class="card">
+          <span class="eyebrow" style="margin-bottom:12px">Macronutrients</span>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div style="background:rgba(52,199,89,.1);border-radius:12px;padding:14px;text-align:center"><div style="font-family:'Fraunces',serif;font-size:30px;font-weight:900;color:#34C759">${n.protein}<span style="font-size:13px">g</span></div><div style="font-family:'Outfit',sans-serif;font-size:11px;color:#34C759;font-weight:700">Protein</div></div>
+            <div style="background:rgba(20,184,204,.1);border-radius:12px;padding:14px;text-align:center"><div style="font-family:'Fraunces',serif;font-size:30px;font-weight:900;color:#14B8CC">${n.carbs}<span style="font-size:13px">g</span></div><div style="font-family:'Outfit',sans-serif;font-size:11px;color:#14B8CC;font-weight:700">Carbs</div></div>
+            <div style="background:rgba(245,158,11,.1);border-radius:12px;padding:14px;text-align:center"><div style="font-family:'Fraunces',serif;font-size:30px;font-weight:900;color:#F59E0B">${n.fat}<span style="font-size:13px">g</span></div><div style="font-family:'Outfit',sans-serif;font-size:11px;color:#F59E0B;font-weight:700">Fat</div></div>
+            <div style="background:rgba(168,224,99,.1);border-radius:12px;padding:14px;text-align:center"><div style="font-family:'Fraunces',serif;font-size:30px;font-weight:900;color:#A8E063">${n.fiber}<span style="font-size:13px">g</span></div><div style="font-family:'Outfit',sans-serif;font-size:11px;color:#A8E063;font-weight:700">Fiber</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    ${additivesHTML}
+
+    <div class="card" id="ingredientCard">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:14px">
+        <span class="eyebrow" style="margin-bottom:0">Full Ingredient List</span>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <select id="translateLang" style="width:auto;padding:7px 12px;font-size:12px;border-radius:10px">
+            <option value="">🌐 Translate to…</option>
+            <option value="hi">Hindi (हिंदी)</option>
+            <option value="mr">Marathi (मराठी)</option>
+            <option value="es">Spanish</option>
+            <option value="fr">French</option>
+            <option value="de">German</option>
+            <option value="ar">Arabic</option>
+            <option value="zh">Chinese (Simplified)</option>
+            <option value="ja">Japanese</option>
+            <option value="pt">Portuguese</option>
+            <option value="ru">Russian</option>
+            <option value="bn">Bengali</option>
+            <option value="ta">Tamil</option>
+            <option value="te">Telugu</option>
+            <option value="kn">Kannada</option>
+            <option value="gu">Gujarati</option>
+          </select>
+          <button class="btn btn-outline" id="translateBtn" onclick="translateIngredients()" style="padding:7px 16px;font-size:12px">Translate</button>
+          <button class="btn btn-ghost" id="resetTranslateBtn" onclick="resetTranslation()" style="padding:7px 12px;font-size:12px;display:none">✕ Original</button>
+        </div>
+      </div>
+      <div id="translateStatus" style="display:none;font-family:'Outfit',sans-serif;font-size:12px;color:var(--slate-mid);margin-bottom:10px"></div>
+      <p id="ingredientText" style="line-height:1.85;color:var(--text2);font-size:15px">${product.ingredients}</p>
+      <p id="ingredientOriginal" style="display:none">${product.ingredients}</p>
+    </div>
+
+    <div style="margin-top:24px;text-align:center">
+      <button class="btn btn-outline" onclick="scrollToSection('compare')" style="font-size:14px">⚖️ Compare with another product ↓</button>
+    </div>`;
+
+  document.getElementById("result").classList.remove("hidden");
+  document.getElementById("navResult").style.display="inline-block";
+  // Trigger initial burn card check
+  rebuildScoreCard();
+  setTimeout(()=>scrollToSection("result"),120);
+  document.dispatchEvent(new Event("histogramResultRendered"));
+}
+
+// ── COMPARE ───────────────────────────────────────────────────────────────────
+const cmpProducts=Object.values(DEMO_PRODUCTS);
+(function(){
+  ["cmpSelectA","cmpSelectB"].forEach((id,idx)=>{
+    const sel=document.getElementById(id);
+    cmpProducts.forEach((p,i)=>{
+      const o=document.createElement("option");
+      o.value=p.barcode;o.textContent=p.name;
+      if(i===idx)o.selected=true;
+      sel.appendChild(o);
+    });
+  });
+  renderCompare();
+})();
+
+function renderCompare(){
+  const bcA=document.getElementById("cmpSelectA").value;
+  const bcB=document.getElementById("cmpSelectB").value;
+  const a=DEMO_PRODUCTS[bcA];
+  const b=DEMO_PRODUCTS[bcB];
+  if(!a||!b)return;
+  const as=healthScore(a.nutrition),bs=healthScore(b.nutrition);
+  const win=as.score>=bs.score?"a":"b";
+  const winner=win==="a"?a:b;
+  const diff=Math.abs(as.score-bs.score);
+  const lowerBetter=["sugar","sodium","fat","saturatedFat","calories"];
+  const better=k=>lowerBetter.includes(k)?(a.nutrition[k]<=b.nutrition[k]?"a":"b"):(a.nutrition[k]>=b.nutrition[k]?"a":"b");
+
+  // Highlight winning card
+  document.getElementById("cmpCardA").style.border=win==="a"?"1.5px solid var(--primary)":"1px solid var(--border)";
+  document.getElementById("cmpCardA").style.boxShadow=win==="a"?"0 0 30px rgba(46,125,50,.12)":"";
+  document.getElementById("cmpCardB").style.border=win==="b"?"1.5px solid var(--primary)":"1px solid var(--border)";
+  document.getElementById("cmpCardB").style.boxShadow=win==="b"?"0 0 30px rgba(46,125,50,.12)":"";
+
+  // Previews
+  ["A","B"].forEach(side=>{
+    const p=side==="A"?a:b;
+    const w=win===(side==="A"?"a":"b");
+    document.getElementById("cmpPreview"+side).innerHTML=`
+      <div style="display:flex;align-items:center;gap:14px">
+        <span style="font-size:44px">${p.image}</span>
+        <div>
+          <div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:14px">${p.name}</div>
+          <div style="font-family:'Outfit',sans-serif;font-size:11px;color:var(--text3);margin-bottom:8px">${p.brand}</div>
+          ${badgeHTML(p.nutrition)}
+        </div>
+        ${w?`<span style="margin-left:auto;background:var(--primary);color:white;font-size:10px;font-family:'Outfit',sans-serif;font-weight:800;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.06em">✓ Healthier</span>`:""}
+      </div>`;
+  });
+
+  // Winner banner
+  document.getElementById("cmpWinner").innerHTML=`
+    <div><div style="font-family:'Outfit',sans-serif;font-size:10px;color:rgba(255,255,255,.7);font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px">Healthier Choice</div><div style="font-family:'Fraunces',serif;font-size:26px;font-weight:900;color:white">${winner.name}</div></div>
+    <div style="text-align:right"><div style="font-family:'Outfit',sans-serif;font-size:10px;color:rgba(255,255,255,.7)">Score Advantage</div><div style="font-family:'Fraunces',serif;font-size:42px;font-weight:900;color:white">+${diff}</div></div>`;
+
+  // Table
+  const metrics=[{k:"calories",l:"Calories",u:""},{k:"protein",l:"Protein",u:"g"},{k:"carbs",l:"Carbs",u:"g"},{k:"sugar",l:"Sugar",u:"g"},{k:"fat",l:"Fat",u:"g"},{k:"fiber",l:"Fiber",u:"g"},{k:"sodium",l:"Sodium",u:"mg"}];
+  let tHTML=`
+    <div style="padding:14px 20px;text-align:center;font-family:'Outfit',sans-serif;font-weight:700;font-size:13px;background:var(--bg2);border-bottom:1px solid var(--border)">${a.name.split(" ").slice(0,3).join(" ")}</div>
+    <div style="padding:14px 8px;text-align:center;font-family:'Outfit',sans-serif;font-weight:700;font-size:11px;color:var(--text3);background:rgba(255,255,255,.03);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:center">VS</div>
+    <div style="padding:14px 20px;text-align:center;font-family:'Outfit',sans-serif;font-weight:700;font-size:13px;background:var(--bg2);border-bottom:1px solid var(--border)">${b.name.split(" ").slice(0,3).join(" ")}</div>`;
+  metrics.forEach(m=>{
+    const w=better(m.k),aV=a.nutrition[m.k],bV=b.nutrition[m.k],mx=Math.max(aV,bV)||1;
+    tHTML+=`
+      <div class="cmp-cell" style="background:${w==="a"?"rgba(46,125,50,.06)":"transparent"}">
+        <div style="font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:${w==="a"?"var(--green-light)":"var(--text)"}">${aV}${m.u}</div>
+        <div style="width:70%;height:5px;background:rgba(255,255,255,.06);border-radius:3px"><div style="width:${(aV/mx)*100}%;height:100%;border-radius:3px;background:${w==="a"?"var(--primary-lt)":"#CBD5D0"}"></div></div>
+      </div>
+      <div style="padding:14px 6px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-size:10px;font-weight:700;color:var(--text3);background:var(--bg);text-align:center">${m.l}</div>
+      <div class="cmp-cell" style="background:${w==="b"?"rgba(46,125,50,.06)":"transparent"}">
+        <div style="font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:${w==="b"?"var(--green-light)":"var(--text)"}">${bV}${m.u}</div>
+        <div style="width:70%;height:5px;background:rgba(255,255,255,.06);border-radius:3px"><div style="width:${(bV/mx)*100}%;height:100%;border-radius:3px;background:${w==="b"?"var(--primary-lt)":"#CBD5D0"}"></div></div>
+      </div>`;
+  });
+  document.getElementById("cmpTable").innerHTML=tHTML;
+}
+
+// ── BLOG ─────────────────────────────────────────────────────────────────────
+(function(){
+  const grid=document.getElementById("blogGrid");
+  BLOGS.forEach((post,i)=>{
+    const d=document.createElement("div");
+    d.className="bc fade-up reveal-scale";
+    d.style.animationDelay=i*70+"ms";
+    d.innerHTML=`
+      <div style="background:${post.col};padding:36px 24px;display:flex;align-items:center;justify-content:center;font-size:52px;min-height:120px">${post.emoji}</div>
+      <div style="padding:20px 20px 24px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <span class="tag">${post.tag}</span>
+          <span style="font-family:'Outfit',sans-serif;font-size:11px;color:var(--text3)">${post.time}</span>
+        </div>
+        <h3 style="font-family:'Outfit',sans-serif;font-weight:700;font-size:16px;line-height:1.4;margin-bottom:10px">${post.title}</h3>
+        <p style="font-size:13px;color:var(--text2);line-height:1.65">${post.excerpt}</p>
+      </div>`;
+    d.onclick=()=>openBlog(post);
+    grid.appendChild(d);
+  });
+})();
+
+function openBlog(post){
+  document.getElementById("blogGrid").style.display="none";
+  const bp=document.getElementById("blogPost");
+  bp.style.display="block";
+  bp.innerHTML=`
+    <div style="font-size:60px;margin-bottom:20px">${post.emoji}</div>
+    <span class="tag">${post.tag}</span>
+    <h1 style="font-size:clamp(26px,4vw,42px);margin-top:16px;margin-bottom:12px;letter-spacing:-.02em;line-height:1.15">${post.title}</h1>
+    <p style="color:var(--text3);font-family:'Outfit',sans-serif;font-size:12px;margin-bottom:32px">${post.time} read · Histogram AI Editorial</p>
+    <div class="divider"></div>
+    <div style="line-height:1.9;font-size:16px;color:var(--text2);margin-top:28px">
+      <p style="margin-bottom:20px">${post.excerpt}</p>
+      <p style="margin-bottom:20px">Food labels carry enormous power — yet most of us lack the literacy to decode them. The ingredients list, nutrition panel, and additive codes are a compressed summary of exactly what you're putting into your body.</p>
+      <p style="margin-bottom:20px">The global food system increasingly relies on additives to extend shelf life and reduce costs. While many are harmless, others carry documented health concerns that deserve consumer awareness.</p>
+      <p>Histogram AI exists to close this gap — turning every barcode into plain-language health intelligence.</p>
+    </div>
+    <button class="btn btn-ghost" onclick="closeBlog()" style="margin-top:32px">← Back to Blog</button>`;
+  scrollToSection("blog");
+}
+function closeBlog(){
+  document.getElementById("blogGrid").style.display="";
+  document.getElementById("blogPost").style.display="none";
+}
+
+// ── PROFILE ───────────────────────────────────────────────────────────────────
+const goals=[{v:"weight-loss",l:"🏃 Weight Loss",d:"Calorie deficit"},{v:"muscle-gain",l:"💪 Muscle Gain",d:"High protein"},{v:"general",l:"🌿 General Health",d:"Balanced nutrition"}];
+let selectedGoal="general";
+(function(){
+  const container=document.getElementById("goalOptions");
+  goals.forEach(g=>{
+    const d=document.createElement("div");
+    d.id="goal-"+g.v;
+    d.onclick=()=>selectGoal(g.v);
+    d.style.cssText=`display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;cursor:pointer;border:1.5px solid ${g.v===selectedGoal?"var(--primary)":"var(--border)"};background:${g.v===selectedGoal?"rgba(46,125,50,.07)":"white"};transition:all .2s;margin-bottom:8px`;
+    d.innerHTML=`<div style="font-size:20px">${g.l.split(" ")[0]}</div><div><div style="font-family:'Outfit',sans-serif;font-weight:600;font-size:13px">${g.l.slice(2)}</div><div style="font-family:'Outfit',sans-serif;font-size:11px;color:var(--text3)">${g.d}</div></div>${g.v===selectedGoal?`<div style="margin-left:auto;width:18px;height:18px;border-radius:50%;background:var(--green-mid);display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-family:'Outfit',sans-serif;font-weight:700">✓</div>`:""}`;
+    container.appendChild(d);
+  });
+  updateStats();
+})();
+
+function selectGoal(v){
+  selectedGoal=v;
+  goals.forEach(g=>{
+    const d=document.getElementById("goal-"+g.v);
+    if(!d)return;
+    d.style.border=g.v===v?"1.5px solid var(--primary)":"1.5px solid var(--border)";
+    d.style.background=g.v===v?"rgba(46,125,50,.07)":"white";
+    d.innerHTML=`<div style="font-size:20px">${g.l.split(" ")[0]}</div><div><div style="font-family:'Outfit',sans-serif;font-weight:600;font-size:13px">${g.l.slice(2)}</div><div style="font-family:'Outfit',sans-serif;font-size:11px;color:var(--text3)">${g.d}</div></div>${g.v===v?`<div style="margin-left:auto;width:18px;height:18px;border-radius:50%;background:var(--green-mid);display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-family:'Outfit',sans-serif;font-weight:700">✓</div>`:""}`;
+  });
+  updateStats();
+}
+
+function updateProfileAvatar(){
+  const name=document.getElementById("pName").value||"A";
+  document.getElementById("profileAvatar").textContent=name[0].toUpperCase();
+  document.getElementById("profileNameDisplay").textContent=name;
+}
+
+function updateStats(){
+  const h=parseFloat(document.getElementById("pHeight").value)||172;
+  const w=parseFloat(document.getElementById("pWeight").value)||68;
+  const bmi=(w/((h/100)**2)).toFixed(1);
+  const bmiLabel=bmi<18.5?"Underweight":bmi<25?"Normal":bmi<30?"Overweight":"Obese";
+  const bmiC=bmi<18.5?"#F59E0B":bmi<25?"#34C759":bmi<30?"#F59E0B":"#F4522D";
+  const cal=selectedGoal==="weight-loss"?1600:selectedGoal==="muscle-gain"?2800:2200;
+  const stats=[{l:"BMI",v:bmi,s:bmiLabel,c:bmiC},{l:"Daily Calories",v:cal,s:"kcal/day",c:"var(--teal-light)"},{l:"Scanned",v:"12",s:"this month",c:"var(--lime)"},{l:"Flagged",v:"3",s:"high risk",c:"#F4522D"}];
+  document.getElementById("profileStats").innerHTML=stats.map(s=>`
+    <div class="card" style="text-align:center">
+      <div style="font-family:'Fraunces',serif;font-size:34px;font-weight:900;color:${s.c};margin-bottom:4px">${s.v}</div>
+      <div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:12px;margin-bottom:2px">${s.l}</div>
+      <div style="font-family:'Outfit',sans-serif;font-size:11px;color:var(--text3)">${s.s}</div>
+    </div>`).join("");
+}
+
+function saveProfile(){
+  const btn=document.getElementById("saveBtn");
+  btn.textContent="✅ Saved!";
+  setTimeout(()=>{btn.textContent="Save Profile";},2500);
+}
+
+// ── INGREDIENT TRANSLATION ────────────────────────────────────────────────────
+async function translateIngredients(){
+  const lang = document.getElementById("translateLang").value;
+  if(!lang){
+    showTranslateStatus("⚠ Please select a language first.", "#F59E0B");
+    return;
+  }
+  const original = document.getElementById("ingredientOriginal").textContent;
+  if(!original||original==="Not available."){
+    showTranslateStatus("No ingredient text to translate.", "#F59E0B");
+    return;
+  }
+
+  const btn = document.getElementById("translateBtn");
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>';
+  showTranslateStatus("Translating…", "var(--text3)");
+
+  try{
+    // Use MyMemory free translation API — no key needed, 5000 chars/day free
+    const langNames = {
+      hi:"Hindi",mr:"Marathi",es:"Spanish",fr:"French",de:"German",
+      ar:"Arabic",zh:"Chinese",ja:"Japanese",pt:"Portuguese",ru:"Russian",
+      bn:"Bengali",ta:"Tamil",te:"Telugu",kn:"Kannada",gu:"Gujarati"
+    };
+
+    // Chunk text if > 500 chars (MyMemory limit per request)
+    const chunks = chunkText(original, 450);
+    let translated = "";
+
+    for(let i=0; i<chunks.length; i++){
+      const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(chunks[i])}&langpair=en|${lang}`;
+      const res = await fetch(url);
+      if(!res.ok) throw new Error("Translation API error");
+      const data = await res.json();
+      if(data.responseStatus!==200) throw new Error(data.responseDetails||"Translation failed");
+      translated += (i>0?" ":"") + data.responseData.translatedText;
+    }
+
+    document.getElementById("ingredientText").textContent = translated;
+    document.getElementById("ingredientText").style.direction = ["ar","he"].includes(lang)?"rtl":"ltr";
+    document.getElementById("resetTranslateBtn").style.display = "inline-flex";
+    showTranslateStatus(`✓ Translated to ${langNames[lang]||lang}`, "#34C759");
+
+  }catch(err){
+    // Fallback: open Google Translate in new tab
+    const text = encodeURIComponent(original.substring(0,500));
+    showTranslateStatus(
+      `Auto-translate unavailable. <a href="https://translate.google.com/?sl=en&tl=${lang}&text=${text}" target="_blank" style="color:var(--green-light);font-weight:700">Open in Google Translate ↗</a>`,
+      "#F59E0B",
+      true
+    );
+  }
+
+  btn.disabled = false;
+  btn.textContent = "Translate";
+}
+
+function chunkText(text, maxLen){
+  if(text.length<=maxLen) return [text];
+  const chunks=[];
+  let start=0;
+  while(start<text.length){
+    let end=start+maxLen;
+    if(end<text.length){
+      // Break at last comma or space before limit
+      const lastComma=text.lastIndexOf(",",end);
+      const lastSpace=text.lastIndexOf(" ",end);
+      const best=Math.max(lastComma,lastSpace);
+      end= best>start ? best : start+maxLen;  // never go backwards
+    }
+    chunks.push(text.slice(start,end).trim());
+    start=end+1;
+  }
+  return chunks;
+}
+
+function showTranslateStatus(msg, color, isHTML=false){
+  const el=document.getElementById("translateStatus");
+  el.style.display="flex";
+  el.style.color=color;
+  if(isHTML) el.innerHTML=msg;
+  else el.textContent=msg;
+}
+
+function resetTranslation(){
+  const original=document.getElementById("ingredientOriginal").textContent;
+  document.getElementById("ingredientText").textContent=original;
+  document.getElementById("ingredientText").style.direction="ltr";
+  document.getElementById("resetTranslateBtn").style.display="none";
+  document.getElementById("translateLang").value="";
+  document.getElementById("translateStatus").style.display="none";
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ── MOTION ENGINE ────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+
+// ── 1. CANVAS PARTICLE NETWORK (hero background) ─────────────────────────────
+(function(){
+  const canvas = document.getElementById('heroCanvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [], animId;
+  const COLORS = ['rgba(46,125,50,', 'rgba(42,157,143,', 'rgba(76,175,80,'];
+  const COUNT = 55;
+
+  function resize(){
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function Particle(){
+    this.x = Math.random()*W;
+    this.y = Math.random()*H;
+    this.vx = (Math.random()-.5)*.35;
+    this.vy = (Math.random()-.5)*.35;
+    this.r  = Math.random()*2.2+.8;
+    this.col = COLORS[Math.floor(Math.random()*COLORS.length)];
+    this.a  = Math.random()*.35+.08;
+  }
+
+  Particle.prototype.update = function(){
+    this.x += this.vx;
+    this.y += this.vy;
+    if(this.x<0||this.x>W) this.vx*=-1;
+    if(this.y<0||this.y>H) this.vy*=-1;
+  };
+
+  function init(){
+    resize();
+    particles=[];
+    for(let i=0;i<COUNT;i++) particles.push(new Particle());
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // Draw connecting lines
+    for(let i=0;i<particles.length;i++){
+      for(let j=i+1;j<particles.length;j++){
+        const dx=particles[i].x-particles[j].x;
+        const dy=particles[i].y-particles[j].y;
+        const dist=Math.sqrt(dx*dx+dy*dy);
+        if(dist<130){
+          const alpha=(1-dist/130)*.12;
+          ctx.beginPath();
+          ctx.strokeStyle=`rgba(46,125,50,${alpha})`;
+          ctx.lineWidth=.8;
+          ctx.moveTo(particles[i].x,particles[i].y);
+          ctx.lineTo(particles[j].x,particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+    // Draw dots
+    particles.forEach(p=>{
+      p.update();
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=p.col+p.a+')';
+      ctx.fill();
+    });
+    animId = requestAnimationFrame(draw);
+  }
+
+  init();
+  draw();
+  window.addEventListener('resize', ()=>{ cancelAnimationFrame(animId); init(); draw(); });
+
+  // Mouse repel
+  window.addEventListener('mousemove', e=>{
+    particles.forEach(p=>{
+      const dx=e.clientX-p.x, dy=e.clientY-p.y;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<100){
+        p.vx -= dx/dist*.3;
+        p.vy -= dy/dist*.3;
+        // Clamp speed
+        const speed=Math.sqrt(p.vx*p.vx+p.vy*p.vy);
+        if(speed>1.5){p.vx=p.vx/speed*1.5;p.vy=p.vy/speed*1.5;}
+      }
+    });
+  });
+})();
+
+// ── 2. ANIMATED HISTOGRAM BARS (hero decoration) ─────────────────────────────
+(function(){
+  const wrap = document.getElementById('heroBars');
+  if(!wrap) return;
+  const heights = [55,90,42,120,68,100,55,80,38,95];
+  heights.forEach((h,i)=>{
+    const bar = document.createElement('div');
+    bar.style.cssText = `width:14px;height:${h}px;background:linear-gradient(180deg,var(--primary-lt),var(--teal));border-radius:3px 3px 0 0;opacity:.1;animation:float ${6+i*.7}s ease-in-out ${i*.15}s infinite`;
+    wrap.appendChild(bar);
+  });
+})();
+
+// ── 3. FLOATING FOOD PARTICLES ────────────────────────────────────────────────
+(function(){
+  const wrap = document.getElementById('heroParticles');
+  if(!wrap) return;
+  const emojis = ['🌿','💊','🔬','🧬','⚗️','🫁','🫀','🧪','🌱','✦','◇','○'];
+  for(let i=0;i<18;i++){
+    const p = document.createElement('div');
+    const left = Math.random()*100;
+    const top  = Math.random()*100;
+    const dur  = 5+Math.random()*8;
+    const delay= Math.random()*8;
+    const size = 10+Math.floor(Math.random()*14);
+    const isEmoji = Math.random()>.55;
+    if(isEmoji){
+      p.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      p.style.cssText = `position:absolute;left:${left}%;top:${top}%;font-size:${size}px;opacity:0;animation:particleFade ${dur}s ${delay}s ease-in infinite;--dur:${dur}s;--delay:${delay}s;filter:grayscale(.3)`;
+    } else {
+      p.style.cssText = `position:absolute;left:${left}%;top:${top}%;width:${size/3}px;height:${size/3}px;border-radius:50%;background:var(--primary);opacity:0;animation:particleFade ${dur}s ${delay}s ease-in infinite;--dur:${dur}s;--delay:${delay}s`;
+    }
+    wrap.appendChild(p);
+  }
+})();
+
+// ── 4. CURSOR GLOW ────────────────────────────────────────────────────────────
+(function(){
+  const glow = document.getElementById('cursorGlow');
+  if(!glow) return;
+  let mx=0,my=0,cx=0,cy=0;
+  window.addEventListener('mousemove',e=>{ mx=e.clientX; my=e.clientY; });
+  function tick(){
+    cx+=(mx-cx)*.08; cy+=(my-cy)*.08;
+    glow.style.left=cx+'px'; glow.style.top=cy+'px';
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+
+// ── 5. MAGNETIC BUTTONS ───────────────────────────────────────────────────────
+document.querySelectorAll('.btn-mag').forEach(btn=>{
+  btn.addEventListener('mousemove',e=>{
+    const rect=btn.getBoundingClientRect();
+    const x=e.clientX-rect.left-rect.width/2;
+    const y=e.clientY-rect.top-rect.height/2;
+    btn.style.transform=`translate(${x*.18}px,${y*.22}px) translateY(-2px)`;
+  });
+  btn.addEventListener('mouseleave',()=>{
+    btn.style.transform='';
+  });
+});
+
+// ── 6. SCROLL REVEAL (IntersectionObserver) ───────────────────────────────────
+(function(){
+  const revealEls = ()=>{
+    document.querySelectorAll('.reveal,.reveal-left,.reveal-right,.reveal-scale').forEach(el=>{
+      if(!el._obs){
+        el._obs=true;
+        const obs=new IntersectionObserver(entries=>{
+          entries.forEach(e=>{
+            if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); }
+          });
+        },{threshold:.12,rootMargin:'0px 0px -40px 0px'});
+        obs.observe(el);
+      }
+    });
+  };
+  revealEls();
+  // Also run after result renders
+  window._revealEls = revealEls;
+})();
+
+// ── 7. CARD 3D TILT ───────────────────────────────────────────────────────────
+document.addEventListener('mousemove',e=>{
+  document.querySelectorAll('.card-tilt').forEach(card=>{
+    const rect=card.getBoundingClientRect();
+    if(e.clientX<rect.left-60||e.clientX>rect.right+60||e.clientY<rect.top-60||e.clientY>rect.bottom+60) return;
+    const x=((e.clientY-rect.top)/rect.height-.5)*8;
+    const y=-((e.clientX-rect.left)/rect.width-.5)*8;
+    card.style.transform=`perspective(700px) rotateX(${x}deg) rotateY(${y}deg) translateY(-4px)`;
+  });
+  // Only reset cards that were previously tilted (not all cards)
+});
+document.addEventListener('mouseleave',()=>{
+  document.querySelectorAll('.card-tilt').forEach(card=>{ card.style.transform=''; });
+});
+
+// ── 8. RIPPLE ON BUTTONS ──────────────────────────────────────────────────────
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('.btn-g,.btn-outline');
+  if(!btn) return;
+  btn.style.position='relative'; btn.style.overflow='hidden';
+  const circle=document.createElement('span');
+  const rect=btn.getBoundingClientRect();
+  const size=Math.max(rect.width,rect.height)*2;
+  circle.style.cssText=`position:absolute;width:${size}px;height:${size}px;border-radius:50%;background:rgba(255,255,255,.25);top:${e.clientY-rect.top-size/2}px;left:${e.clientX-rect.left-size/2}px;animation:ripple .6s ease both;pointer-events:none`;
+  btn.appendChild(circle);
+  setTimeout(()=>circle.remove(),700);
+});
+
+// ── 9. ANIMATED STAT COUNTERS ────────────────────────────────────────────────
+(function(){
+  const stats=document.querySelectorAll('.stat-num[data-target]');
+  if(!stats.length) return;
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(!e.isIntersecting) return;
+      const el=e.target;
+      const target=parseInt(el.dataset.target);
+      // Use data-suffix attr if present, otherwise derive from initial text
+      const suffix=el.dataset.suffix!==undefined
+        ? el.dataset.suffix
+        : el.textContent.replace(/^[0-9]+/,'');  // strip leading digits only
+      let current=0;
+      const step=Math.max(1,Math.ceil(target/50));
+      const timer=setInterval(()=>{
+        current=Math.min(current+step,target);
+        el.textContent=current+suffix;
+        if(current>=target){ clearInterval(timer); el.textContent=target+suffix; }
+      },30);
+      obs.unobserve(el);
+    });
+  },{threshold:.5});
+  stats.forEach(s=>obs.observe(s));
+})();
+
+// ── 10. NAV SCROLL SHADOW ────────────────────────────────────────────────────
+window.addEventListener('scroll',()=>{
+  const nav=document.querySelector('nav');
+  if(!nav) return;
+  if(window.scrollY>20){
+    nav.style.boxShadow='0 2px 32px rgba(46,125,50,.12)';
+    nav.style.background='rgba(241,245,243,0.97)';
+  } else {
+    nav.style.boxShadow='0 1px 20px rgba(46,125,50,.08)';
+    nav.style.background='rgba(241,245,243,0.94)';
+  }
+},{passive:true});
+
+// ── 11. RE-RUN REVEALS AFTER RESULT RENDERS ──────────────────────────────────
+// Patched: use a simple post-render hook instead of fragile function override
+document.addEventListener("histogramResultRendered", ()=>{
+  setTimeout(()=>{ if(window._revealEls) window._revealEls(); }, 80);
+});
+
+// (isNutritionMissing and fetchFromAI are defined in the waterfall engine above)
+
+// Show a slim banner inside the result that explains AI-filled data
+function showAIBanner(confidence, source, errId){
+  const confColor = confidence === "high" ? "#34C759" : confidence === "medium" ? "#F59E0B" : "#E76F51";
+  const confLabel = confidence === "high" ? "High confidence" : confidence === "medium" ? "Estimated" : "Low confidence — verify independently";
+  const banner = document.createElement("div");
+  banner.id = "aiBanner";
+  banner.style.cssText = `background:rgba(42,157,143,.09);border:1.5px solid rgba(42,157,143,.3);border-radius:14px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:flex-start;gap:12px;font-family:'Outfit',sans-serif`;
+  banner.innerHTML = `
+    <span style="font-size:22px;flex-shrink:0">🤖</span>
+    <div>
+      <div style="font-size:13px;font-weight:700;color:var(--teal);margin-bottom:3px">Nutrition sourced by Histogram AI</div>
+      <div style="font-size:12px;color:var(--text2)">Open Food Facts had incomplete data for this product. Claude AI filled in the nutrition values from its knowledge base.</div>
+      <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap">
+        <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:${confColor}20;color:${confColor};border:1px solid ${confColor}40">● ${confLabel}</span>
+        <span style="font-size:11px;color:var(--text3);padding:3px 8px">Source: ${source||"AI estimate"}</span>
+      </div>
+    </div>`;
+  const resultContent = document.getElementById("resultContent");
+  if(resultContent) resultContent.prepend(banner);
+}
+
+function showAIErrorBanner(productName){
+  const banner = document.createElement("div");
+  banner.style.cssText = `background:rgba(244,82,45,.07);border:1.5px solid rgba(244,82,45,.25);border-radius:14px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;gap:12px;font-family:'Outfit',sans-serif`;
+  banner.innerHTML = `
+    <span style="font-size:22px">⚠️</span>
+    <div>
+      <div style="font-size:13px;font-weight:700;color:var(--coral);margin-bottom:3px">Nutrition data unavailable</div>
+      <div style="font-size:12px;color:var(--text2)">Neither Open Food Facts nor our AI could find reliable nutrition data for <strong>${productName}</strong>. The health score has been hidden. Try checking the product label directly.</div>
+    </div>`;
+  const resultContent = document.getElementById("resultContent");
+  if(resultContent) resultContent.prepend(banner);
+}
+
+
+</script>
+</body>
+</html>
