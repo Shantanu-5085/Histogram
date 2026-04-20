@@ -943,8 +943,7 @@ function triggerScan(bc){
 // Level 2 : Open Food Facts       (4M+ global products)
 // Level 3 : Open Beauty Facts     (cosmetics / personal care)
 // Level 4 : Open Products Facts   (generic / non-food)
-// Level 5 : Nutritionix           (large branded-food DB, no key needed)
-// Level 6 : Claude AI             (ALWAYS fires — never shows "not found")
+// Level 5 : Claude AI             (ALWAYS fires — never shows "not found")
 // ══════════════════════════════════════════════════════════════════════════════
 
 // ── Progress banner ───────────────────────────────────────────────────────────
@@ -1032,58 +1031,7 @@ async function fetchFromOFF(subdomain, bc){
   } catch(e) { clearTimeout(t); return null; }
 }
 
-// ── Level 5: Nutritionix free public endpoint (no key required) ───────────────
-// Uses their natural-language search to find a branded product by barcode/name.
-// The free upc endpoint returns basic info; we parse what we can.
-async function fetchFromNutritionix(bc){
-  const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), 7000);
-  try {
-    // Nutritionix free branded food search via UPC
-    const res = await fetch(
-      `https://trackapi.nutritionix.com/v2/search/item?upc=${bc}`,
-      {
-        signal: ctrl.signal,
-        headers: {
-          "x-app-id":  "43a2bb63",   // Nutritionix public demo app id (rate-limited but free)
-          "x-app-key": "e5b0e3b8a9d94c3d1f7a5c2e0f8b4d6a",
-          "Content-Type": "application/json"
-        }
-      }
-    );
-    clearTimeout(t);
-    if(!res.ok) return null;
-    const data = await res.json();
-    const item = data?.foods?.[0];
-    if(!item) return null;
-
-    const nutrition = {
-      calories:     Math.round(safeNum(item.nf_calories)),
-      protein:      safeNum(item.nf_protein),
-      carbs:        safeNum(item.nf_total_carbohydrate),
-      sugar:        safeNum(item.nf_sugars),
-      fat:          safeNum(item.nf_total_fat),
-      saturatedFat: safeNum(item.nf_saturated_fat),
-      fiber:        safeNum(item.nf_dietary_fiber),
-      sodium:       Math.round(safeNum(item.nf_sodium)),
-    };
-    return {
-      barcode:     bc,
-      name:        item.food_name   || "Unknown Product",
-      brand:       item.brand_name  || "Unknown Brand",
-      category:    item.nix_brand_name || "Food Product",
-      image:       item.photo?.thumb || "🛒",
-      servingSize: item.serving_weight_grams ? item.serving_weight_grams + "g" : (item.serving_unit || "100g"),
-      nutrition,
-      additives:   [],
-      ingredients: item.nf_ingredient_statement || "Not available.",
-      nutriscoreGrade: null,
-      _nutritionixSourced: true,
-    };
-  } catch(e) { clearTimeout(t); return null; }
-}
-
-// ── Level 6: Claude AI — ALWAYS returns something, never fails silently ────────
+// ── Level 5: Claude AI — ALWAYS returns something, never fails silently ────────
 async function fetchFromAI(bc, knownName, knownBrand){
   const hasIdentity = knownName && knownName !== "Unknown Product";
 
@@ -1186,27 +1134,22 @@ async function lookup(bc, errId){
   }
 
   // ── Level 2: Open Food Facts ──────────────────────────────────────────────
-  showLookupProgress(1, 5, "🌍 Searching Open Food Facts (4M+ products)…");
+  showLookupProgress(1, 4, "🌍 Searching Open Food Facts (4M+ products)…");
   let product = await fetchFromOFF("world.openfoodfacts.org", bc);
   if(product){ return await _resolveProduct(product, bc); }
 
   // ── Level 3: Open Beauty Facts ────────────────────────────────────────────
-  showLookupProgress(2, 5, "💄 Searching Open Beauty Facts…");
+  showLookupProgress(2, 4, "💄 Searching Open Beauty Facts…");
   product = await fetchFromOFF("world.openbeautyfacts.org", bc);
   if(product){ product.category = product.category || "Personal Care"; return await _resolveProduct(product, bc); }
 
   // ── Level 4: Open Products Facts ─────────────────────────────────────────
-  showLookupProgress(3, 5, "📦 Searching Open Products Facts…");
+  showLookupProgress(3, 4, "📦 Searching Open Products Facts…");
   product = await fetchFromOFF("world.openproductsfacts.org", bc);
   if(product){ return await _resolveProduct(product, bc); }
 
-  // ── Level 5: Nutritionix ──────────────────────────────────────────────────
-  showLookupProgress(4, 5, "🔎 Searching Nutritionix branded food database…");
-  product = await fetchFromNutritionix(bc);
-  if(product){ return await _resolveProduct(product, bc); }
-
-  // ── Level 6: Claude AI — ALWAYS produces a result ────────────────────────
-  showLookupProgress(5, 5, "🤖 Asking Claude AI to identify this product…");
+  // ── Level 5: Claude AI — ALWAYS produces a result ───────────────────────
+  showLookupProgress(4, 4, "🤖 Asking Claude AI to identify this product…");
   await _resolveWithAI(bc, null, null);
 }
 
